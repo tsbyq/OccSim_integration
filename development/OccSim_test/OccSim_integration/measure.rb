@@ -7,11 +7,11 @@ require 'date'
 # http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
 # start the measure
-class OccSim_dev < OpenStudio::Measure::ModelMeasure
+class OccSim_integration < OpenStudio::Measure::ModelMeasure
 
   # human readable name
   def name
-    return "OccSim_dev"
+    return "OccSim_integration"
   end
 
   # human readable description
@@ -825,4 +825,4 @@ class OccSim_dev < OpenStudio::Measure::ModelMeasure
 end
 
 # register the measure to be used by the application
-OccSim_dev.new.registerWithApplication
+OccSim_integration.new.registerWithApplication
