@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>a0fe58a6-5138-480d-8089-097fd67a5b38</version_id>
-  <version_modified>20180914T211850Z</version_modified>
+  <version_id>66f7add6-8bff-45cd-bc26-37944b3c4314</version_id>
+  <version_modified>20180914T214237Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -45,12 +45,6 @@
       <checksum>E658D50D</checksum>
     </file>
     <file>
-      <filename>test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>E96CAB6D</checksum>
-    </file>
-    <file>
       <filename>library.csv</filename>
       <filetype>csv</filetype>
       <usage_type>resource</usage_type>
@@ -71,7 +65,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>05EB7290</checksum>
+      <checksum>BE00DAD1</checksum>
     </file>
   </files>
 </measure>

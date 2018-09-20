@@ -815,6 +815,12 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
 
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
 
+    # Read schedule file from csv
+    # Update: Han Li 2018/9/14
+    
+
+
+
     # report final condition of model
     runner.registerFinalCondition("End.")
 

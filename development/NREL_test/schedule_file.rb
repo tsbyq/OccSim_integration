@@ -6,6 +6,12 @@ require './baseline_model'
 
 model = BaselineModel.new
 
+
+
+# puts model.methods
+
+
+
 #make a 2 story, 100m X 50m, 10 zone core/perimeter building
 model.add_geometry({"length" => 100,
                     "width" => 50,
