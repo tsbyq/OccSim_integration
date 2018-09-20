@@ -1,0 +1,142 @@
+Schedule:Compact,
+obFMU Activity Schedule, !- Name
+obFMU Any Number,        !- Schedule Type Limits Name
+Through: 12/31,          !- Field 1
+For: AllDays,            !- Field 2
+Until: 24:00,            !- Field 3
+110.7;                   !- Field 4
+
+ScheduleTypeLimits,
+obFMU Fraction,          !- Name
+0.0,                     !- Lower Limit Value
+1.0,                     !- Upper Limit Value
+CONTINUOUS;              !- Numeric Type
+
+ScheduleTypeLimits,
+obFMU Any Number;        !- Name
+
+Zone,
+S1_Perimeter_ZN_1;                   !- Name
+People,
+S1_Perimeter_ZN_1 People,            !- Name
+S1_Perimeter_ZN_1,                   !- Zone or ZoneList Name
+S1_Perimeter_ZN_1 People Schedule,   !- Number of People Schedule Name
+People,                  !- Number of People Calculation Method
+10,                       !- Number of People
+,                        !- People per Zone Floor Area {person/m2}
+,                        !- Zone Floor Area per Person {m2/person}
+0.3,                     !- Fraction Radiant
+AUTOCALCULATE,           !- Sensible Heat Fraction
+obFMU Activity Schedule; !- Activity Level Schedule Name
+
+Schedule:File,
+S1_Perimeter_ZN_1 People Schedule,   !- Name
+obFMU Fraction,          !- Schedule Type Limits Name
+C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/OccSimulator_out/OccSch_out_IDF.csv,    !- File Name
+4,                       !- Column Number
+7,                       !- Rows to Skip at Top
+8784,                     !- Number of Hours of Data
+Comma,                   !- Column Separator
+No,                      !- Interpolate to Timestep
+10;                      !- Minutes per Item
+
+Zone,
+S2_Perimeter_ZN_2;                   !- Name
+People,
+S2_Perimeter_ZN_2 People,            !- Name
+S2_Perimeter_ZN_2,                   !- Zone or ZoneList Name
+S2_Perimeter_ZN_2 People Schedule,   !- Number of People Schedule Name
+People,                  !- Number of People Calculation Method
+9,                       !- Number of People
+,                        !- People per Zone Floor Area {person/m2}
+,                        !- Zone Floor Area per Person {m2/person}
+0.3,                     !- Fraction Radiant
+AUTOCALCULATE,           !- Sensible Heat Fraction
+obFMU Activity Schedule; !- Activity Level Schedule Name
+
+Schedule:File,
+S2_Perimeter_ZN_2 People Schedule,   !- Name
+obFMU Fraction,          !- Schedule Type Limits Name
+C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/OccSimulator_out/OccSch_out_IDF.csv,    !- File Name
+5,                       !- Column Number
+7,                       !- Rows to Skip at Top
+8784,                     !- Number of Hours of Data
+Comma,                   !- Column Separator
+No,                      !- Interpolate to Timestep
+10;                      !- Minutes per Item
+
+Zone,
+S3_Perimeter_ZN_3;                   !- Name
+People,
+S3_Perimeter_ZN_3 People,            !- Name
+S3_Perimeter_ZN_3,                   !- Zone or ZoneList Name
+S3_Perimeter_ZN_3 People Schedule,   !- Number of People Schedule Name
+People,                  !- Number of People Calculation Method
+10,                       !- Number of People
+,                        !- People per Zone Floor Area {person/m2}
+,                        !- Zone Floor Area per Person {m2/person}
+0.3,                     !- Fraction Radiant
+AUTOCALCULATE,           !- Sensible Heat Fraction
+obFMU Activity Schedule; !- Activity Level Schedule Name
+
+Schedule:File,
+S3_Perimeter_ZN_3 People Schedule,   !- Name
+obFMU Fraction,          !- Schedule Type Limits Name
+C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/OccSimulator_out/OccSch_out_IDF.csv,    !- File Name
+6,                       !- Column Number
+7,                       !- Rows to Skip at Top
+8784,                     !- Number of Hours of Data
+Comma,                   !- Column Separator
+No,                      !- Interpolate to Timestep
+10;                      !- Minutes per Item
+
+Zone,
+S4_Perimeter_ZN_4;                   !- Name
+People,
+S4_Perimeter_ZN_4 People,            !- Name
+S4_Perimeter_ZN_4,                   !- Zone or ZoneList Name
+S4_Perimeter_ZN_4 People Schedule,   !- Number of People Schedule Name
+People,                  !- Number of People Calculation Method
+8,                       !- Number of People
+,                        !- People per Zone Floor Area {person/m2}
+,                        !- Zone Floor Area per Person {m2/person}
+0.3,                     !- Fraction Radiant
+AUTOCALCULATE,           !- Sensible Heat Fraction
+obFMU Activity Schedule; !- Activity Level Schedule Name
+
+Schedule:File,
+S4_Perimeter_ZN_4 People Schedule,   !- Name
+obFMU Fraction,          !- Schedule Type Limits Name
+C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/OccSimulator_out/OccSch_out_IDF.csv,    !- File Name
+7,                       !- Column Number
+7,                       !- Rows to Skip at Top
+8784,                     !- Number of Hours of Data
+Comma,                   !- Column Separator
+No,                      !- Interpolate to Timestep
+10;                      !- Minutes per Item
+
+Zone,
+S5_Core_ZN;                   !- Name
+People,
+S5_Core_ZN People,            !- Name
+S5_Core_ZN,                   !- Zone or ZoneList Name
+S5_Core_ZN People Schedule,   !- Number of People Schedule Name
+People,                  !- Number of People Calculation Method
+11,                       !- Number of People
+,                        !- People per Zone Floor Area {person/m2}
+,                        !- Zone Floor Area per Person {m2/person}
+0.3,                     !- Fraction Radiant
+AUTOCALCULATE,           !- Sensible Heat Fraction
+obFMU Activity Schedule; !- Activity Level Schedule Name
+
+Schedule:File,
+S5_Core_ZN People Schedule,   !- Name
+obFMU Fraction,          !- Schedule Type Limits Name
+C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/OccSimulator_out/OccSch_out_IDF.csv,    !- File Name
+8,                       !- Column Number
+7,                       !- Rows to Skip at Top
+8784,                     !- Number of Hours of Data
+Comma,                   !- Column Separator
+No,                      !- Interpolate to Timestep
+10;                      !- Minutes per Item
+
