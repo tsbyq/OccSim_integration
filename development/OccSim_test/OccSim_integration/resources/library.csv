@@ -1,16 +1,16 @@
 --- Space Rules ---,,,,,,,,,
 Office Type 1,Default Value,Office Core,Default Value,Office Type 3,Default Value,Office Top Floor,Default Value,Office Type 5,Default Value
-Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],999
+Office: Occupancy Density [m2/person],10,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],22,Office: Occupancy Density [m2/person],999
 Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0
 Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0
 Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100
 Meeting Room Type 1,Default Value,Meeting Room Type 2,Default Value,Meeting Room Type 3,Default Value,Meeting Room Type 4,Default Value,Meeting Room Type 5,Default Value
-Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2
+Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,3,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2
 Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6
 Meeting Room: minimum number of people per meeting,2,Meeting Room: minimum number of people per meeting,2,Meeting Room: minimum number of people per meeting,2,Meeting Room: minimum number of people per meeting,2,Meeting Room: minimum number of people per meeting,2
 Meeting Room: maximum number of people per meeting,8,Meeting Room: maximum number of people per meeting,8,Meeting Room: maximum number of people per meeting,8,Meeting Room: maximum number of people per meeting,8,Meeting Room: maximum number of people per meeting,8
-Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],13
-Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],70
+Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],17,Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],13,Meeting Room: probability of 30-min meetings [%],13
+Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],66,Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],70,Meeting Room: probability of 60-min meetings [%],70
 Meeting Room: probability of 90-min meetings [%],12,Meeting Room: probability of 90-min meetings [%],12,Meeting Room: probability of 90-min meetings [%],12,Meeting Room: probability of 90-min meetings [%],12,Meeting Room: probability of 90-min meetings [%],12
 Meeting Room: probability of 120-min meetings [%],5,Meeting Room: probability of 120-min meetings [%],5,Meeting Room: probability of 120-min meetings [%],5,Meeting Room: probability of 120-min meetings [%],5,Meeting Room: probability of 120-min meetings [%],5
 --- Occupant Behavior Rules ---,Default Value,,,,,,,,
@@ -69,16 +69,16 @@ Regular Staff: average stay time -  Auxiliary rooms [min],10,,,,,,,,
 Regular Staff: percent of time in space -  Outdoor [%],10,,,,,,,,
 Regular Staff: average stay time -  Outdoor [min],20,,,,,,,,
  --- Holiday Rules ---,Default Value,,,,,,,,
-US Holiday: New Year's Day,2018-01-01,,,,,,,,
-"US Holiday: Martin Luther King, Jr. Day",2018-01-18,,,,,,,,
-US Holiday: George Washington's Birthday,2018-02-15,,,,,,,,
-US Holiday: Memorial Day,2018-05-30,,,,,,,,
-US Holiday: Independence Day,2018-07-04,,,,,,,,
-US Holiday: Labor Day,2018-09-05,,,,,,,,
-US Holiday: Columbus Day,2018-10-10,,,,,,,,
-US Holiday: Veterans Day,2018-11-11,,,,,,,,
-US Holiday: Thanksgiving Day,2018-11-24,,,,,,,,
-US Holiday: Christmas Day,2018-12-25,,,,,,,,
+US Holiday: New Year's Day,1/1/2018,,,,,,,,
+"US Holiday: Martin Luther King, Jr. Day",1/18/2018,,,,,,,,
+US Holiday: George Washington's Birthday,2/15/2018,,,,,,,,
+US Holiday: Memorial Day,5/30/2018,,,,,,,,
+US Holiday: Independence Day,7/4/2018,,,,,,,,
+US Holiday: Labor Day,9/5/2018,,,,,,,,
+US Holiday: Columbus Day,10/10/2018,,,,,,,,
+US Holiday: Veterans Day,11/11/2018,,,,,,,,
+US Holiday: Thanksgiving Day,11/24/2018,,,,,,,,
+US Holiday: Christmas Day,12/25/2018,,,,,,,,
 Custom Holiday: Custom Holiday 1,,,,,,,,,
 Custom Holiday: Custom Holiday 2,,,,,,,,,
 Custom Holiday: Custom Holiday 3,,,,,,,,,
