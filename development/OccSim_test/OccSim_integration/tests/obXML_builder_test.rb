@@ -16,6 +16,7 @@ def loadOSM(pathStr)
 end
 
 def assignOccType(probabilityDct)
+  puts probabilityDct
   # Build an array based on probability
   v_sample = Array.new()
   probabilityDct.each do |key, p|
@@ -34,18 +35,9 @@ def isValidDate(dateStr)
   end
 end
 
-def obXML_builder(osModel, userLib, outPath, all_args)
-  # Get general information ----------------------------------------------------
 
-  # Get which space types are assigned to be default occupanct assumptions
-  flag_space_type_occ_default = all_args[0] # Hash
-  # Get specific occupancy assumptions for each space
-  flag_space_occ_choice = all_args
-
-  # puts flag_space_type_occ_default
-  # puts flag_space_occ_choice
-
-  # Create hashes to store space rules available in the library
+def space_rule_hash_wrapper(userLib)
+    # Create hashes to store space rules available in the library
   # Office spaces
   office_t1 = {
     'name' => userLib.Office_t1_name,
@@ -153,6 +145,23 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     userLib.meetingRoom_t5_name => meeting_t5
   }
 
+  return space_rules
+end
+
+def obXML_builder(osModel, userLib, outPath, all_args)
+  # Get general information ----------------------------------------------------
+
+  # Get which space types are assigned to be default occupanct assumptions
+  flag_space_type_occ_default = all_args[0] # Hash
+  # Get specific occupancy assumptions for each space
+  flag_space_occ_choice = all_args
+
+  # puts flag_space_type_occ_default
+  # puts flag_space_occ_choice
+  
+
+  space_rules = space_rule_hash_wrapper(userLib)
+
 
   puts space_rules['Office Type 1']
   puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
@@ -232,14 +241,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     n_occ += (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
   end
 
-  # Occupancy type probability hash
-  # Need to apply space rules based on user selection!!!
-  pDct = {
-    "Regular staff" => userLib.office_t1_OccupantPercentageRegularStaff,
-    "Manager" => userLib.office_t1_OccupantPercentageManager,
-    "Administrator" => userLib.office_t1_OccupantPercentageAdminitrator
-  }
-
   puts "There are #{n_space} spaces in the building"
   puts "There are #{n_occ} occupants in the building"
   puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
@@ -275,13 +276,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   # ~ Meeting room spaces
   v_meetingSpaces.each_with_index do |meetingSpace, index|
     meetingSpaceName = meetingSpace.nameString
-
-    puts meetingSpaceName
-
     space_type_selected = flag_space_occ_choice[meetingSpaceName]
-
-    puts space_rules[space_type_selected]
-
     min_meeting_per_day = space_rules[space_type_selected]['MinimumNumberOfMeetingPerDay']
     max_meeting_per_day = space_rules[space_type_selected]['MaximumNumberOfMeetingPerDay']
     min_occupant_per_meeting = space_rules[space_type_selected]['MinimumNumberOfPeoplePerMeeting']
@@ -290,8 +285,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     probabilityOf_60_minMeetings = space_rules[space_type_selected]['ProbabilityOf_60_minMeetings']
     probabilityOf_90_minMeetings = space_rules[space_type_selected]['ProbabilityOf_90_minMeetings']
     probabilityOf_120_minMeetings = space_rules[space_type_selected]['ProbabilityOf_120_minMeetings']
-
-
     # Assign the information based on user library for now !!!!!!!!
     spaceIDString = "S#{index + 1 + all_index}_#{meetingSpaceName}"
     f.puts("<Space ID='" + spaceIDString + "'>")
@@ -330,10 +323,12 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   all_index = all_index + v_meetingSpaces.length
 
   # ~ Office spaces
+  occID_spaceName_Dct = Hash.new
   v_officeSpaces.each_with_index do |officeSpace, index|
     # Get space basic information
     officeSpaceName = officeSpace.nameString
-    nOcc = (officeSpace.floorArea / userLib.Office_t1_OccupancyDensity).floor
+    space_type_selected = flag_space_occ_choice[officeSpaceName]
+    nOcc = (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
     spaceIDString = "S#{index + 1 + all_index}_#{officeSpaceName}" + '_test'
 
     f.puts("<Space ID='" +  spaceIDString + "'>")
@@ -343,6 +338,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       occIDString = "#{spaceIDString}_O#{i + 1}"
       f.puts("<OccupantID>" + occIDString + "</OccupantID>")
       v_allOccID << occIDString
+      occID_spaceName_Dct[occIDString] = officeSpaceName
     end
     f.puts("</Space>")
   end
@@ -362,10 +358,20 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   f.puts('<Occupants>')
   ## Occupant
   v_allOccID.each_with_index do |occID, index|
-    f.puts("<Occupant ID='" + occID + "'>")
+    f.puts("<Occupant ID='" + occID + "'>")    # puts '---->'
+    puts 'Occupant ID: ' + occID
+    puts 'Corresponding space name:' + occID_spaceName_Dct[occID]
+    space_type_selected = flag_space_occ_choice[occID_spaceName_Dct[occID]]
     f.puts("<LifeStyle>Norm</LifeStyle>")
     # Randomly assign occ type by probability
+    pDct = {
+      "Manager" => space_rules[space_type_selected]['OccupantPercentageManager'],
+      "Administrator" => space_rules[space_type_selected]['OccupantPercentageAdminitrator'],
+      "Regular staff" => space_rules[space_type_selected]['OccupantPercentageRegularStaff']
+    }
+
     occType = assignOccType(pDct)
+
     f.puts("<JobType>" + occType + " </JobType>")
     # Assign movement behavior based on occ type drawed previously
     case occType

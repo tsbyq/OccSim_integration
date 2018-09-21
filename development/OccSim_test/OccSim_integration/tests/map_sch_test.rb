@@ -1,5 +1,3 @@
-require 'C:/openstudio-2.6.2/Ruby/openstudio'
-require 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/UserLibrary.rb'
 
 def loadOSM(pathStr)
   translator = OpenStudio::OSVersion::VersionTranslator.new
@@ -55,6 +53,9 @@ end
 
 
 def main
+  require 'C:/openstudio-2.6.2/Ruby/openstudio'
+  require 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/UserLibrary.rb'
+
   obFMU_path = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/'
   output_path = obFMU_path + 'OccSimulator_out'
   model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/small_office.osm')
@@ -82,4 +83,9 @@ def main
 end
 
 
-main()
+# main()
+
+st = 'S2_Perimeter_ZN_1_O3'
+puts st
+space_name = st.split('_')[1] + '_' + st.split('_')[2] + '_' + st.split('_')[3]
+puts space_name

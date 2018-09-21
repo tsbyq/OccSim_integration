@@ -1,9 +1,9 @@
 --- Space Rules ---,,,,,,,,,
 Office Type 1,Default Value,Office Core,Default Value,Office Type 3,Default Value,Office Top Floor,Default Value,Office Type 5,Default Value
 Office: Occupancy Density [m2/person],10,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],20,Office: Occupancy Density [m2/person],22,Office: Occupancy Density [m2/person],999
-Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0
-Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0
-Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100
+Office: occupant percentage - Manager [%],10,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0,Office: occupant percentage - Manager [%],0
+Office: occupant percentage - Adminitrator [%],20,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0,Office: occupant percentage - Adminitrator [%],0
+Office: occupant percentage - Regular staff [%],70,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100,Office: occupant percentage - Regular staff [%],100
 Meeting Room Type 1,Default Value,Meeting Room Type 2,Default Value,Meeting Room Type 3,Default Value,Meeting Room Type 4,Default Value,Meeting Room Type 5,Default Value
 Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,3,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2,Meeting Room: minimum number of meeting per day,2
 Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6,Meeting Room: maximum number of meeting per day,6
