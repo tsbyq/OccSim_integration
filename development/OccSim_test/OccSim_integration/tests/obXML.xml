@@ -74,28 +74,28 @@
 <Occupants>
 <Occupant ID='S2_Perimeter_ZN_1_test_O1'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O2'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O3'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O4'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O5'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O6'>
 <LifeStyle>Norm</LifeStyle>
@@ -104,13 +104,13 @@
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O7'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O8'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O9'>
 <LifeStyle>Norm</LifeStyle>

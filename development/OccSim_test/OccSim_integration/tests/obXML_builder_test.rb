@@ -16,7 +16,6 @@ def loadOSM(pathStr)
 end
 
 def assignOccType(probabilityDct)
-  puts probabilityDct
   # Build an array based on probability
   v_sample = Array.new()
   probabilityDct.each do |key, p|
@@ -162,13 +161,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
   space_rules = space_rule_hash_wrapper(userLib)
 
-
-  puts space_rules['Office Type 1']
-  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-  puts space_rules['Meeting Room Type 1']
-  # puts space_rules['Office Type 1']['OccupancyDensity']
-
-
   v_space_types = osModel.getSpaceTypes
   v_meetingSpaces = Array.new()
   v_officeSpaces = Array.new()
@@ -240,12 +232,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     space_type_selected = flag_space_occ_choice[officeSpace.name.to_s]
     n_occ += (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
   end
-
-  puts "There are #{n_space} spaces in the building"
-  puts "There are #{n_occ} occupants in the building"
-  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-  puts 'Writing XML file...'
-  puts '------------------------------------------------------------------'
 
   # Generate the obXML file
   f = File.new(outPath + "obXML.xml",  "w")
@@ -359,8 +345,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   ## Occupant
   v_allOccID.each_with_index do |occID, index|
     f.puts("<Occupant ID='" + occID + "'>")    # puts '---->'
-    puts 'Occupant ID: ' + occID
-    puts 'Corresponding space name:' + occID_spaceName_Dct[occID]
     space_type_selected = flag_space_occ_choice[occID_spaceName_Dct[occID]]
     f.puts("<LifeStyle>Norm</LifeStyle>")
     # Randomly assign occ type by probability
@@ -369,7 +353,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       "Administrator" => space_rules[space_type_selected]['OccupantPercentageAdminitrator'],
       "Regular staff" => space_rules[space_type_selected]['OccupantPercentageRegularStaff']
     }
-
     occType = assignOccType(pDct)
 
     f.puts("<JobType>" + occType + " </JobType>")
