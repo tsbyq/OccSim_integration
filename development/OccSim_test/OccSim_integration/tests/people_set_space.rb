@@ -20,6 +20,11 @@ def get_os_schedule_from_csv(file_name, model, col, skip_row)
   return schedule_file
 end
 
+
+def set_schedule_for_people(schedule_file)
+
+end
+
 model = loadOSM('small_office.osm')
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,14 +45,13 @@ test_ActivitySchedule.setToConstantValue(110.7)
 test_people_definition = OpenStudio::Model::PeopleDefinition.new(model)
 test_people = OpenStudio::Model::People.new(test_people_definition)
 
-# Set OS:People attributes 
-test_people.setName('Zone x people')
-test_people.setActivityLevelSchedule(test_ActivitySchedule)
-# test_people.setNumberofPeopleSchedule(schedule_file)
-
 
 # Set OS:People:Definition attributes 
 test_people_definition.setName('Zone x people definition')
+
+# Set OS:People attributes 
+test_people.setName('Zone x people')
+test_people.setActivityLevelSchedule(test_ActivitySchedule)
 
 
 # Read schedule from csv
@@ -59,13 +63,19 @@ external_file = external_file.get
 
 schedule_file = get_os_schedule_from_csv(file_name, model, 3, 1)
 
+
+
 puts test_people.setNumberofPeopleSchedule(schedule_file)
 puts test_people.setSpace(model.getSpaces[0])
 
 
-puts test_people
-puts schedule_file
-puts schedule_file.externalFile
+puts model
+
+# puts test_people
+# puts test_people_definition
+# puts schedule_file
+# puts schedule_file.externalFile
+# puts test_ActivitySchedule
 
 # # Read schedule:file from model
 # workspace_translator = OpenStudio::EnergyPlus::ReverseTranslator.new()
