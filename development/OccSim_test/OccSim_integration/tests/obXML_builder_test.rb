@@ -20,7 +20,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   # Get which space types are assigned to be default occupanct assumptions
   flag_space_type_occ_default = all_args[0] # Hash
   # Get specific occupancy assumptions for each space
-  flag_space_occ_choice = all_args[1] # Has
+  flag_space_occ_choice = all_args
 
   # puts flag_space_type_occ_default
   # puts flag_space_occ_choice
@@ -134,6 +134,10 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   }
 
 
+  puts space_rules['Office Type 1']
+  # puts space_rules['Office Type 1']['OccupancyDensity']
+
+
   v_space_types = osModel.getSpaceTypes
   v_meetingSpaces = Array.new()
   v_officeSpaces = Array.new()
@@ -170,6 +174,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   # Consider the space to be a conference space is the type is in the list
   v_conference_space_types = ['Conference']
 
+  puts flag_space_occ_choice
+
   # Loop through all space types
   v_space_types.each do |space_type|
     # puts space_type.standardsSpaceType.to_s
@@ -178,9 +184,16 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       # Do something when the space type is office
       v_officeSpaces = space_type.spaces
       v_officeSpaces.each do |officeSpace|
-        # puts officeSpace
+
+
+        puts officeSpace.name.to_s
+
+        space_type_selected = flag_space_occ_choice[officeSpace.name.to_s]
+        puts 'Occupancy density of the current space is: ' + space_rules[space_type_selected]['OccupancyDensity'].to_s
+
+
         v_officeAreas << officeSpace.floorArea
-        v_nOccOffice << officeSpace.floorArea * userLib.Office_t1_OccupancyDensity
+        v_nOccOffice << officeSpace.floorArea * space_rules[space_type_selected]['OccupancyDensity']
       end
 
     elsif v_conference_space_types.include? space_type.standardsSpaceType.to_s
@@ -193,7 +206,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   n_space = v_officeSpaces.length
   n_occ = 0
   v_officeSpaces.each do |officeSpace|
-    n_occ += (officeSpace.floorArea / userLib.Office_t1_OccupancyDensity).floor
+    space_type_selected = flag_space_occ_choice[officeSpace.name.to_s]
+    n_occ += (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
   end
 
   # Occupancy type probability hash
@@ -219,7 +233,7 @@ def main
     "Perimeter_ZN_2"=>"Office Type 1", 
     "Perimeter_ZN_3"=>"Office Core", 
     "Perimeter_ZN_4"=>"Office Type 3", 
-    "Core_ZN"=>"Office Type 1", 
+    "Core_ZN"=>"Office Type 5", 
     "Attic"=>"Other"
   } 
 
