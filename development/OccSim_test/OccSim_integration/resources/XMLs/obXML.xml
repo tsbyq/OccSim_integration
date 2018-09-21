@@ -8,159 +8,159 @@
 <Space ID='S0_Outdoor'>
 <Type>Outdoor</Type>
 </Space>
-<Space ID='S1_Perimeter_ZN_1test'>
+<Space ID='S1_Perimeter_ZN_1_test'>
 <Type>OfficeShared</Type>
-<OccupantID>S1_Perimeter_ZN_1test_O1</OccupantID>
-<OccupantID>S1_Perimeter_ZN_1test_O2</OccupantID>
-<OccupantID>S1_Perimeter_ZN_1test_O3</OccupantID>
-<OccupantID>S1_Perimeter_ZN_1test_O4</OccupantID>
-<OccupantID>S1_Perimeter_ZN_1test_O5</OccupantID>
+<OccupantID>S1_Perimeter_ZN_1_test_O1</OccupantID>
+<OccupantID>S1_Perimeter_ZN_1_test_O2</OccupantID>
+<OccupantID>S1_Perimeter_ZN_1_test_O3</OccupantID>
+<OccupantID>S1_Perimeter_ZN_1_test_O4</OccupantID>
+<OccupantID>S1_Perimeter_ZN_1_test_O5</OccupantID>
 </Space>
-<Space ID='S2_Perimeter_ZN_2test'>
+<Space ID='S2_Perimeter_ZN_2_test'>
 <Type>OfficeShared</Type>
-<OccupantID>S2_Perimeter_ZN_2test_O1</OccupantID>
-<OccupantID>S2_Perimeter_ZN_2test_O2</OccupantID>
-<OccupantID>S2_Perimeter_ZN_2test_O3</OccupantID>
+<OccupantID>S2_Perimeter_ZN_2_test_O1</OccupantID>
+<OccupantID>S2_Perimeter_ZN_2_test_O2</OccupantID>
+<OccupantID>S2_Perimeter_ZN_2_test_O3</OccupantID>
 </Space>
-<Space ID='S3_Perimeter_ZN_3test'>
+<Space ID='S3_Perimeter_ZN_3_test'>
 <Type>OfficeShared</Type>
-<OccupantID>S3_Perimeter_ZN_3test_O1</OccupantID>
-<OccupantID>S3_Perimeter_ZN_3test_O2</OccupantID>
-<OccupantID>S3_Perimeter_ZN_3test_O3</OccupantID>
-<OccupantID>S3_Perimeter_ZN_3test_O4</OccupantID>
-<OccupantID>S3_Perimeter_ZN_3test_O5</OccupantID>
+<OccupantID>S3_Perimeter_ZN_3_test_O1</OccupantID>
+<OccupantID>S3_Perimeter_ZN_3_test_O2</OccupantID>
+<OccupantID>S3_Perimeter_ZN_3_test_O3</OccupantID>
+<OccupantID>S3_Perimeter_ZN_3_test_O4</OccupantID>
+<OccupantID>S3_Perimeter_ZN_3_test_O5</OccupantID>
 </Space>
-<Space ID='S4_Perimeter_ZN_4test'>
+<Space ID='S4_Perimeter_ZN_4_test'>
 <Type>OfficeShared</Type>
-<OccupantID>S4_Perimeter_ZN_4test_O1</OccupantID>
-<OccupantID>S4_Perimeter_ZN_4test_O2</OccupantID>
-<OccupantID>S4_Perimeter_ZN_4test_O3</OccupantID>
+<OccupantID>S4_Perimeter_ZN_4_test_O1</OccupantID>
+<OccupantID>S4_Perimeter_ZN_4_test_O2</OccupantID>
+<OccupantID>S4_Perimeter_ZN_4_test_O3</OccupantID>
 </Space>
-<Space ID='S5_Core_ZNtest'>
+<Space ID='S5_Core_ZN_test'>
 <Type>OfficeShared</Type>
-<OccupantID>S5_Core_ZNtest_O1</OccupantID>
-<OccupantID>S5_Core_ZNtest_O2</OccupantID>
-<OccupantID>S5_Core_ZNtest_O3</OccupantID>
-<OccupantID>S5_Core_ZNtest_O4</OccupantID>
-<OccupantID>S5_Core_ZNtest_O5</OccupantID>
-<OccupantID>S5_Core_ZNtest_O6</OccupantID>
-<OccupantID>S5_Core_ZNtest_O7</OccupantID>
+<OccupantID>S5_Core_ZN_test_O1</OccupantID>
+<OccupantID>S5_Core_ZN_test_O2</OccupantID>
+<OccupantID>S5_Core_ZN_test_O3</OccupantID>
+<OccupantID>S5_Core_ZN_test_O4</OccupantID>
+<OccupantID>S5_Core_ZN_test_O5</OccupantID>
+<OccupantID>S5_Core_ZN_test_O6</OccupantID>
+<OccupantID>S5_Core_ZN_test_O7</OccupantID>
 </Space>
 </Spaces>
 </Building>
 </Buildings>
 <Occupants>
-<Occupant ID='S1_Perimeter_ZN_1test_O1'>
+<Occupant ID='S1_Perimeter_ZN_1_test_O1'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S1_Perimeter_ZN_1test_O2'>
+<Occupant ID='S1_Perimeter_ZN_1_test_O2'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S1_Perimeter_ZN_1test_O3'>
+<Occupant ID='S1_Perimeter_ZN_1_test_O3'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S1_Perimeter_ZN_1test_O4'>
+<Occupant ID='S1_Perimeter_ZN_1_test_O4'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S1_Perimeter_ZN_1test_O5'>
+<Occupant ID='S1_Perimeter_ZN_1_test_O5'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S2_Perimeter_ZN_2test_O1'>
+<Occupant ID='S2_Perimeter_ZN_2_test_O1'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S2_Perimeter_ZN_2test_O2'>
+<Occupant ID='S2_Perimeter_ZN_2_test_O2'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S2_Perimeter_ZN_2test_O3'>
+<Occupant ID='S2_Perimeter_ZN_2_test_O3'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S3_Perimeter_ZN_3test_O1'>
+<Occupant ID='S3_Perimeter_ZN_3_test_O1'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S3_Perimeter_ZN_3test_O2'>
+<Occupant ID='S3_Perimeter_ZN_3_test_O2'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S3_Perimeter_ZN_3test_O3'>
+<Occupant ID='S3_Perimeter_ZN_3_test_O3'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S3_Perimeter_ZN_3test_O4'>
+<Occupant ID='S3_Perimeter_ZN_3_test_O4'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S3_Perimeter_ZN_3test_O5'>
+<Occupant ID='S3_Perimeter_ZN_3_test_O5'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S4_Perimeter_ZN_4test_O1'>
+<Occupant ID='S4_Perimeter_ZN_4_test_O1'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S4_Perimeter_ZN_4test_O2'>
+<Occupant ID='S4_Perimeter_ZN_4_test_O2'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S4_Perimeter_ZN_4test_O3'>
+<Occupant ID='S4_Perimeter_ZN_4_test_O3'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O1'>
+<Occupant ID='S5_Core_ZN_test_O1'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O2'>
+<Occupant ID='S5_Core_ZN_test_O2'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O3'>
+<Occupant ID='S5_Core_ZN_test_O3'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O4'>
+<Occupant ID='S5_Core_ZN_test_O4'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O5'>
+<Occupant ID='S5_Core_ZN_test_O5'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O6'>
+<Occupant ID='S5_Core_ZN_test_O6'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S5_Core_ZNtest_O7'>
+<Occupant ID='S5_Core_ZN_test_O7'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>

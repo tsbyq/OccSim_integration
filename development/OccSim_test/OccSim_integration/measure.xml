@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>a3c53e26-e7bd-47c5-9d34-f62ca1bd52a4</version_id>
-  <version_modified>20180921T003400Z</version_modified>
+  <version_id>8a7078f3-9eff-4a11-90e5-6b41ca5a8b3f</version_id>
+  <version_modified>20180921T173058Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -69,10 +69,28 @@
       <checksum>DC0B9AD0</checksum>
     </file>
     <file>
+      <filename>people_set_space.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>803AC1AA</checksum>
+    </file>
+    <file>
       <filename>small_office.osm</filename>
       <filetype>osm</filetype>
       <usage_type>test</usage_type>
-      <checksum>BA2890CF</checksum>
+      <checksum>2A5BEC4A</checksum>
+    </file>
+    <file>
+      <filename>map_sch_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>9CE6DF57</checksum>
+    </file>
+    <file>
+      <filename>OccSch_out.csv</filename>
+      <filetype>csv</filetype>
+      <usage_type>test</usage_type>
+      <checksum>4C230DF1</checksum>
     </file>
     <file>
       <version>
@@ -83,13 +101,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>EDCA9081</checksum>
-    </file>
-    <file>
-      <filename>people_set_space.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>803AC1AA</checksum>
+      <checksum>D1684ECC</checksum>
     </file>
   </files>
 </measure>

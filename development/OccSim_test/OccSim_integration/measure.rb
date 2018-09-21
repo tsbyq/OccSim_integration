@@ -84,6 +84,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     # Standard space types for auxiliary rooms
     v_auxiliary_space_types = ['OfficeLarge Data Center',
                                'OfficeLarge Main Data Center']
+    v_other_space_types = ['Attic', '']
 
     i = 1
     # Loop through all space types, group spaces by their types
@@ -101,7 +102,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
           arg_temp.setDefaultValue('Meeting Room Type 1')
         elsif(v_auxiliary_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue('Auxiliary')
-        elsif(space_type.standardsSpaceType.to_s == '')
+        elsif(v_other_space_types.include? space_type.standardsSpaceType.to_s)
           # If the space type is not in standard space types
           arg_temp.setDefaultValue('Other')
         end
@@ -174,6 +175,22 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     # puts flag_space_type_occ_default
     # puts flag_space_occ_choice
 
+    # Create hashes to store space rules available in the library
+    space_rules = {
+      userLib.Office_t1_name => 'saf',
+      userLib.Office_t2_name => 'saf',
+      userLib.Office_t3_name => 'saf',
+      userLib.Office_t4_name => 'saf',
+      userLib.Office_t5_name => 'saf',
+      userLib.meetingRoom_t1_name => 'saf',
+      userLib.meetingRoom_t2_name => 'saf',
+      userLib.meetingRoom_t3_name => 'saf',
+      userLib.meetingRoom_t4_name => 'saf',
+      userLib.meetingRoom_t5_name => 'saf',
+    }
+
+
+
     v_space_types = osModel.getSpaceTypes
     v_meetingSpaces = Array.new()
     v_officeSpaces = Array.new()
@@ -214,11 +231,11 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     v_space_types.each do |space_type|
       # puts space_type.standardsSpaceType.to_s
 
-      puts space_type
       if v_office_space_types.include? space_type.standardsSpaceType.to_s
         # Do something when the space type is office
         v_officeSpaces = space_type.spaces
         v_officeSpaces.each do |officeSpace|
+          puts officeSpace
           v_officeAreas << officeSpace.floorArea
           v_nOccOffice << officeSpace.floorArea * userLib.Office_t1_OccupancyDensity
         end
@@ -237,6 +254,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     end
 
     # Occupancy type probability hash
+    # Need to apply space rules based on user selection!!!
     pDct = {
       "Regular staff" => userLib.office_t1_OccupantPercentageRegularStaff,
       "Manager" => userLib.office_t1_OccupantPercentageManager,
@@ -755,32 +773,24 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
 
 
   def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
-
-      # Create people activity schedule
-      people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
-      people_activity_sch.setName('obFMU Activity Schedule')
-      people_activity_sch.setToConstantValue(110.7)
-
-      # Test create new people and people definition instances
-      new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
-      new_people = OpenStudio::Model::People.new(new_people_def)
-      new_people_def.setName(space_name + ' people definition')
-  
-      # Set OS:People:Definition attributes
-      new_people_def.setName(space_name + ' people definition')
-      # !! Need to set the number of people calculation method
-  
-      # Set OS:People attributes 
-      new_people.setName(space_name + ' people')
-      new_people.setActivityLevelSchedule(people_activity_sch)
-  
-      people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
-  
-      new_people.setNumberofPeopleSchedule(people_sch)
-      new_people.setSpace(model.getSpaces[0])
-  
-      return model
-  
+    # Create people activity schedule
+    people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
+    people_activity_sch.setName('obFMU Activity Schedule')
+    people_activity_sch.setToConstantValue(110.7)
+    # Test create new people and people definition instances
+    new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+    new_people = OpenStudio::Model::People.new(new_people_def)
+    new_people_def.setName(space_name + ' people definition')
+    # Set OS:People:Definition attributes
+    new_people_def.setName(space_name + ' people definition')
+    # !! Need to set the number of people calculation method
+    # Set OS:People attributes 
+    new_people.setName(space_name + ' people')
+    new_people.setActivityLevelSchedule(people_activity_sch)
+    people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
+    new_people.setNumberofPeopleSchedule(people_sch)
+    new_people.setSpace(model.getSpaces[0])
+    return model
   end
 
 
@@ -860,7 +870,6 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     model = set_schedule_for_people(model, 'space_name', (output_file_name + '.csv'), userLib, all_args)
 
     puts all_args
-
 
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
 
