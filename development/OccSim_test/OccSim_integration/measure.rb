@@ -324,7 +324,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
       # Get space basic information
       officeSpaceName = officeSpace.nameString
       nOcc = (officeSpace.floorArea / userLib.Office_t1_OccupancyDensity).floor
-      spaceIDString = "S#{index + 1 + all_index}_#{officeSpaceName}"
+      spaceIDString = "S#{index + 1 + all_index}_#{officeSpaceName}" + '_test'
 
       f.puts("<Space ID='" +  spaceIDString + "'>")
       f.puts("<Type>OfficeShared</Type>")
@@ -754,7 +754,13 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
   end
 
 
-  def set_schedule_for_people(model, space_name, csv_file, people_activity_sch)
+  def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
+
+      # Create people activity schedule
+      people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
+      people_activity_sch.setName('obFMU Activity Schedule')
+      people_activity_sch.setToConstantValue(110.7)
+
       # Test create new people and people definition instances
       new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
       new_people = OpenStudio::Model::People.new(new_people_def)
@@ -850,13 +856,10 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
 
     # Read schedule back to osm
     # get_os_schedule_from_csv((output_file_name + '.csv'), model, 3, 7)
-    test_ActivitySchedule = OpenStudio::Model::ScheduleCompact.new(model)
-    test_ActivitySchedule.setName('obFMU Activity Schedule')
-    test_ActivitySchedule.setToConstantValue(110.7)
 
-    model = set_schedule_for_people(model, 'space_name', (output_file_name + '.csv'), test_ActivitySchedule)
+    model = set_schedule_for_people(model, 'space_name', (output_file_name + '.csv'), userLib, all_args)
 
-    puts model
+    puts all_args
 
 
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
