@@ -12,76 +12,75 @@ def loadOSM(pathStr)
   return model
 end
 
+def get_os_schedule_from_csv(file_name, model, col, skip_row)
+  file_name = File.realpath(file_name)
+  external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
+  external_file = external_file.get
+  schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
+  return schedule_file
+end
 
 model = loadOSM('small_office.osm')
 
-workspace_translator = OpenStudio::EnergyPlus::ReverseTranslator.new()
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Approach 1 -- create people and people definition pairs
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create the ScheduleTypeLimits instance
+test_ScheduleTypeLimits = OpenStudio::Model::ScheduleTypeLimits.new(model)
+test_ScheduleTypeLimits.setFieldComment(1, 'Name')
+test_ScheduleTypeLimits.setName('obFMU Any Number')
 
-workspace_obFMU_idf = OpenStudio::Workspace::load('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/OccSch_out_IDF.idf').get
-# # Only keep schedule:file related objects
+# Create the OS:Schedule:Compact instance from obFMU activity schedule
+test_ActivitySchedule = OpenStudio::Model::ScheduleCompact.new(model)
+test_ActivitySchedule.setName('obFMU Activity Schedule')
+test_ActivitySchedule.setToConstantValue(110.7)
+# test_ActivitySchedule.setScheduleTypeLimits(test_ScheduleTypeLimits)
 
+# Test create new people and people definition instances
+test_people_definition = OpenStudio::Model::PeopleDefinition.new(model)
+test_people = OpenStudio::Model::People.new(test_people_definition)
 
-
-workspace_obFMU_idf.objects.each do |idf_object|
-    if(['Schedule:Compact', 'ScheduleTypeLimits', 'Zone'].include? idf_object.iddObject.name)
-        workspace_obFMU_idf.removeObject(idf_object.handle)
-    end
-end
-
-
-# puts workspace_obFMU_idf
-
-obFMU_osm_objects = workspace_translator.translateWorkspace(workspace_obFMU_idf)
-
-temp_people_obFMU_osm = obFMU_osm_objects.objects[1].to_People.get
- 
-temp_people_model_osm = model.getPeoples
-
-puts temp_people_obFMU_osm
-puts temp_people_model_osm
+# Set OS:People attributes 
+test_people.setName('Zone x people')
+test_people.setActivityLevelSchedule(test_ActivitySchedule)
+# test_people.setNumberofPeopleSchedule(schedule_file)
 
 
-model.removeObject(temp_people_model_osm[0].handle)
-
-puts temp_people_obFMU_osm.setSpace(model.getSpaces[0])
-
+# Set OS:People:Definition attributes 
+test_people_definition.setName('Zone x people definition')
 
 
+# Read schedule from csv
+file_name = File.join(File.dirname(__FILE__), 'OccSch_out_IDF.csv')
+file_name = File.realpath(file_name)
+external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
+external_file = external_file.get
 
 
-# create people def and instance (def can be shared across instances)
-people_def = OpenStudio::Model::PeopleDefinition.new(model)
-people_inst = OpenStudio::Model::People.new(people_def)
+schedule_file = get_os_schedule_from_csv(file_name, model, 3, 1)
+
+puts test_people.setNumberofPeopleSchedule(schedule_file)
+puts test_people.setSpace(model.getSpaces[0])
 
 
+puts test_people
+puts schedule_file
+puts schedule_file.externalFile
 
+# # Read schedule:file from model
+# workspace_translator = OpenStudio::EnergyPlus::ReverseTranslator.new()
+# workspace_obFMU_idf = OpenStudio::Workspace::load('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/OccSch_out_IDF.idf').get
 
+# workspace_obFMU_idf.objects.each do |idf_object|
+#     if(['Schedule:Compact', 'ScheduleTypeLimits', 'Zone', 'People'].include? idf_object.iddObject.name)
+#         workspace_obFMU_idf.removeObject(idf_object.handle)
+#     end
+# end
 
+# obFMU_osm = workspace_translator.translateWorkspace(workspace_obFMU_idf)
 
+# # puts obFMU_osm.objects
+# # puts obFMU_osm.objects[1].to_ScheduleFile.get
+# puts obFMU_osm.objects[1].to_ScheduleFile.get.externalFile
 
-
-
-
-
-
-
-
-
-# # obFMU_osm_objects.getScheduleCompact
-# # obFMU_osm_objects.getScheduleTypeLimits
-# # obFMU_osm_objects.getPeopleDefinition
-# # obFMU_osm_objects.getPeople
-# # obFMU_osm_objects.getExternalFile
-# # obFMU_osm_objects.getScheduleFile
-# pe = obFMU_osm_objects.getPeoples[0]
-
-# # puts obFMU_osm_objects.getPeoples[0]
-# # puts obFMU_osm_objects.getPeoples[0].resetSpace()
-# # puts obFMU_osm_objects.getPeoples[0]
-# # # puts obFMU_osm_objects.getPeoples[0].setSpace(new_space)
-
-# puts pe
-# puts pe.resetSpace
-# puts pe
-# puts pe.setSpace(new_space)
-# puts pe
+# puts test_people.setNumberofPeopleSchedule(obFMU_osm.objects[1].to_ScheduleFile.get)
