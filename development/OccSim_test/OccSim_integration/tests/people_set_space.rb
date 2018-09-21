@@ -21,7 +21,26 @@ def get_os_schedule_from_csv(file_name, model, col, skip_row)
 end
 
 
-def set_schedule_for_people(schedule_file)
+def set_schedule_for_people(model, space_name, csv_file, people_activity_sch)
+    # Test create new people and people definition instances
+    new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+    new_people = OpenStudio::Model::People.new(new_people_def)
+    new_people_def.setName(space_name + ' people definition')
+
+    # Set OS:People:Definition attributes
+    new_people_def.setName(space_name + ' people definition')
+    # !! Need to set the number of people calculation method
+
+    # Set OS:People attributes 
+    new_people.setName(space_name + ' people')
+    new_people.setActivityLevelSchedule(people_activity_sch)
+
+    people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
+
+    new_people.setNumberofPeopleSchedule(people_sch)
+    new_people.setSpace(model.getSpaces[0])
+
+    return model
 
 end
 
@@ -39,58 +58,19 @@ test_ScheduleTypeLimits.setName('obFMU Any Number')
 test_ActivitySchedule = OpenStudio::Model::ScheduleCompact.new(model)
 test_ActivitySchedule.setName('obFMU Activity Schedule')
 test_ActivitySchedule.setToConstantValue(110.7)
-# test_ActivitySchedule.setScheduleTypeLimits(test_ScheduleTypeLimits)
-
-# Test create new people and people definition instances
-test_people_definition = OpenStudio::Model::PeopleDefinition.new(model)
-test_people = OpenStudio::Model::People.new(test_people_definition)
-
-
-# Set OS:People:Definition attributes 
-test_people_definition.setName('Zone x people definition')
-
-# Set OS:People attributes 
-test_people.setName('Zone x people')
-test_people.setActivityLevelSchedule(test_ActivitySchedule)
-
 
 # Read schedule from csv
 file_name = File.join(File.dirname(__FILE__), 'OccSch_out_IDF.csv')
 file_name = File.realpath(file_name)
-external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
-external_file = external_file.get
-
-
-schedule_file = get_os_schedule_from_csv(file_name, model, 3, 1)
 
 
 
-puts test_people.setNumberofPeopleSchedule(schedule_file)
-puts test_people.setSpace(model.getSpaces[0])
+################################################################################
+# Try to execute the function
+################################################################################
+space_name = 'Space 1'
+model = set_schedule_for_people(model, space_name, file_name, test_ActivitySchedule)
+space_name = 'Space 2'
+model = set_schedule_for_people(model, space_name, file_name, test_ActivitySchedule)
 
-
-puts model
-
-# puts test_people
-# puts test_people_definition
-# puts schedule_file
-# puts schedule_file.externalFile
-# puts test_ActivitySchedule
-
-# # Read schedule:file from model
-# workspace_translator = OpenStudio::EnergyPlus::ReverseTranslator.new()
-# workspace_obFMU_idf = OpenStudio::Workspace::load('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/OccSch_out_IDF.idf').get
-
-# workspace_obFMU_idf.objects.each do |idf_object|
-#     if(['Schedule:Compact', 'ScheduleTypeLimits', 'Zone', 'People'].include? idf_object.iddObject.name)
-#         workspace_obFMU_idf.removeObject(idf_object.handle)
-#     end
-# end
-
-# obFMU_osm = workspace_translator.translateWorkspace(workspace_obFMU_idf)
-
-# # puts obFMU_osm.objects
-# # puts obFMU_osm.objects[1].to_ScheduleFile.get
-# puts obFMU_osm.objects[1].to_ScheduleFile.get.externalFile
-
-# puts test_people.setNumberofPeopleSchedule(obFMU_osm.objects[1].to_ScheduleFile.get)
+# puts model

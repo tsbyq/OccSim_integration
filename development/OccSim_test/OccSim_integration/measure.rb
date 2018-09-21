@@ -744,6 +744,40 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     puts 'coSimXML.xml file created.'
   end
 
+
+  def get_os_schedule_from_csv(file_name, model, col, skip_row)
+    file_name = File.realpath(file_name)
+    external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
+    external_file = external_file.get
+    schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
+    return schedule_file
+  end
+
+
+  def set_schedule_for_people(model, space_name, csv_file, people_activity_sch)
+      # Test create new people and people definition instances
+      new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+      new_people = OpenStudio::Model::People.new(new_people_def)
+      new_people_def.setName(space_name + ' people definition')
+  
+      # Set OS:People:Definition attributes
+      new_people_def.setName(space_name + ' people definition')
+      # !! Need to set the number of people calculation method
+  
+      # Set OS:People attributes 
+      new_people.setName(space_name + ' people')
+      new_people.setActivityLevelSchedule(people_activity_sch)
+  
+      people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
+  
+      new_people.setNumberofPeopleSchedule(people_sch)
+      new_people.setSpace(model.getSpaces[0])
+  
+      return model
+  
+  end
+
+
   ##############################################################################
   # define what happens when the measure is run
   def run(model, runner, user_arguments)
@@ -812,6 +846,18 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
 
     # Command to call obFMU.exe
     system(obFMU_path + 'obFMU.exe', xml_file_name, output_file_name, co_sim_file_name)
+
+
+    # Read schedule back to osm
+    # get_os_schedule_from_csv((output_file_name + '.csv'), model, 3, 7)
+    test_ActivitySchedule = OpenStudio::Model::ScheduleCompact.new(model)
+    test_ActivitySchedule.setName('obFMU Activity Schedule')
+    test_ActivitySchedule.setToConstantValue(110.7)
+
+    model = set_schedule_for_people(model, 'space_name', (output_file_name + '.csv'), test_ActivitySchedule)
+
+    puts model
+
 
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
 
