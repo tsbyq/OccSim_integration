@@ -132,57 +132,83 @@ end
 
 def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
 
-  space_rules = space_rule_hash_wrapper(userLib)
+  puts '----------------------------------------------------------------------'
+  puts 'Current space scanned: ' + space_name
 
+  space_rules = space_rule_hash_wrapper(userLib)
   occ_type_arg_vals = all_args[1]
   space_ID_map = all_args[2]
+  space_type_selected = occ_type_arg_vals[space_name]
 
-  puts occ_type_arg_vals
+  puts 'Corresponding user selected space type: ' + space_type_selected
+  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-  occ_type_arg_vals.each do |key_space_name, space_type_selected|
-    if key_space_name == space_name
-      puts 'User selected space type from library: ' + key_space_name + '----' + space_type_selected
-      puts space_rules[space_type_selected]
-      puts 'Index when generating schedule: ' + space_ID_map[key_space_name].to_s
+  # Only office and meeting spaces have space rules for now
+  if not space_rules[space_type_selected].nil?
+    puts 'Proceed...'
+
+    # Create people activity schedule
+    people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
+    people_activity_sch.setName('obFMU Activity Schedule')
+    people_activity_sch.setToConstantValue(110.7)
+  
+    # Set OS:People:Definition attributes
+    new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+    puts "Set people definition name: " + new_people_def.setName(space_name + ' people definition').to_s
+  
+    # Test create new people and people definition instances
+    new_people = OpenStudio::Model::People.new(new_people_def)
+    puts "Set people name: " + new_people.setName(space_name + ' people').to_s
+    puts "Set people activity schedule: " + new_people.setActivityLevelSchedule(people_activity_sch).to_s
+
+    # Check if the space is office or meeting room.
+    if space_rules[space_type_selected]['OccupancyDensity'].nil?
+      # The current space is a meeting room
+      n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
+      puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People', 1).to_s
+      puts "Set number of people: " + new_people_def.setNumberofPeople(n_people).to_s
+    else
+      # The current space is a office room
+      people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
+      puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1).to_s
+      puts "Set people per floor area: " + new_people_def.setPeopleperSpaceFloorArea(people_per_area).to_s
     end
+
+    # Map the schedule to space
+    people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
+    new_people.setNumberofPeopleSchedule(people_sch)
+
+    new_people.setSpace(model.getSpaces[0])
+
+
   end
 
-  # Create people activity schedule
-  people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
-  people_activity_sch.setName('obFMU Activity Schedule')
-  people_activity_sch.setToConstantValue(110.7)
-  # Test create new people and people definition instances
-  new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
-  new_people = OpenStudio::Model::People.new(new_people_def)
-  
-  # Set OS:People:Definition attributes
-  new_people_def.setName(space_name + ' people definition')
+  # occ_type_arg_vals.each do |key_space_name, space_type_selected|
+  #   if key_space_name == space_name
+  #     puts 'User selected space type from library: ' + key_space_name + '----' + space_type_selected
+  #     puts space_rules[space_type_selected]
+  #     puts 'Index when generating schedule: ' + space_ID_map[key_space_name].to_s
 
-  # puts new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
-  # puts new_people_def.setPeopleperSpaceFloorArea(192)
-  # puts new_people_def.setNumberOfPeopleCalculationMethod('Area/People', 1)
+  #     puts new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
+  #     puts new_people_def.setPeopleperSpaceFloorArea(192)
 
+
+  #   end
+  # end
 
   # !! Need to set the number of people calculation method
   # Set OS:People attributes 
-  new_people.setName(space_name + ' people')
-  new_people.setActivityLevelSchedule(people_activity_sch)
-  people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
-  new_people.setNumberofPeopleSchedule(people_sch)
 
+  # # Set to the right space !!!
+  # model.getSpaces.each do |space|
+  #   if space.nameString == space_name
+  #     puts space_name
+  #   end
+  # end
 
-  # Set to the right space !!!
-  model.getSpaces.each do |space|
-    if space.nameString == space_name
-      puts space_name
-    end
-  end
-
-  new_people.setSpace(model.getSpaces[0])
-
-
-  # puts new_people_def
-  # puts new_people
+  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Results ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+  puts new_people_def
+  puts new_people
   # puts people_activity_sch
 
   return model
@@ -202,7 +228,7 @@ def main
 
   occ_type_arg_vals = {
     "Perimeter_ZN_1"=>"Office Type 1", 
-    "Perimeter_ZN_2"=>"Office Type 1", 
+    "Perimeter_ZN_2"=>"Office Type 3", 
     "Perimeter_ZN_3"=>"Office Type 1", 
     "Perimeter_ZN_4"=>"Office Type 1", 
     "Core_ZN"=>"Meeting Room Type 1", 
@@ -225,8 +251,6 @@ def main
   # puts all_args
 
   model.getSpaces.each do |space|
-    puts '----------------------------------------------------------------------'
-    puts 'Current space scanned: ' + space.name.to_s
     model = set_schedule_for_people(model, space.name.to_s, csv_file_path, userLib, all_args)
   end
 
