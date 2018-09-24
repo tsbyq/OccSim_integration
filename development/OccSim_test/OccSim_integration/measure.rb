@@ -31,17 +31,6 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     ############################################################################
     # Prepare options for the apply measure now GUI
     ############################################################################
-    # Let the user choose whether they want to use default occupancy asumptions.
-    # Make an argument for each Space_type in the model
-    model.getSpaceTypes.each do |space_type|
-      next if not space_type.spaces.size > 0 # Skip the space type which is not assigned to any space
-      space_type_name = space_type.name.get.to_s # lowercase, no spaces or special characters
-      # the name of the space to add to the model
-      st_arg = OpenStudio::Measure::OSArgument.makeBoolArgument("#{space_type_name}_val", true)
-      st_arg.setDisplayName("Use default assumptions for #{space_type.name}")
-      st_arg.setDefaultValue(true)
-      args << st_arg
-    end
 
     # Read user pre-defined library
     root_path = File.dirname(__FILE__) + '/resources/'
@@ -53,53 +42,69 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
 
     # Space type choices
     space_type_chs = OpenStudio::StringVector.new
-    space_type_chs << userLib.Office_t1_name
-    space_type_chs << userLib.Office_t2_name
-    space_type_chs << userLib.Office_t3_name
-    space_type_chs << userLib.Office_t4_name
-    space_type_chs << userLib.Office_t5_name
-    space_type_chs << userLib.meetingRoom_t1_name
-    space_type_chs << userLib.meetingRoom_t2_name
-    space_type_chs << userLib.meetingRoom_t3_name
-    space_type_chs << userLib.meetingRoom_t4_name
-    space_type_chs << userLib.meetingRoom_t5_name
-    space_type_chs << "Auxiliary"
-    space_type_chs << "Lobby"
-    space_type_chs << "Corridor"
-    space_type_chs << "Other"
+    office_space_type_chs = OpenStudio::StringVector.new
+    meeting_space_type_chs = OpenStudio::StringVector.new
+    other_space_type_chs = OpenStudio::StringVector.new
+
+    office_space_type_chs << userLib.Office_t1_name
+    office_space_type_chs << userLib.Office_t2_name
+    office_space_type_chs << userLib.Office_t3_name
+    office_space_type_chs << userLib.Office_t4_name
+    office_space_type_chs << userLib.Office_t5_name
+    meeting_space_type_chs << userLib.meetingRoom_t1_name
+    meeting_space_type_chs << userLib.meetingRoom_t2_name
+    meeting_space_type_chs << userLib.meetingRoom_t3_name
+    meeting_space_type_chs << userLib.meetingRoom_t4_name
+    meeting_space_type_chs << userLib.meetingRoom_t5_name
+    other_space_type_chs << "Auxiliary"
+    other_space_type_chs << "Lobby"
+    other_space_type_chs << "Corridor"
+    other_space_type_chs << "Other"
 
     # v_spaces = Array.new()
     # v_spaces = model.getSpaces
     v_space_types = model.getSpaceTypes
 
     # Standard space types for office rooms
-    v_office_space_types = ['WholeBuilding - Sm Office',
-                            'WholeBuilding - Md Office',
-                            'WholeBuilding - Lg Office',
-                            'Office',
-                            'ClosedOffice',
-                            'OpenOffice']
+    v_office_space_types = [
+      'WholeBuilding - Sm Office',
+      'WholeBuilding - Md Office',
+      'WholeBuilding - Lg Office',
+      'Office',
+      'ClosedOffice',
+      'OpenOffice'
+    ]
     # Standard space types for meeting rooms
     v_conference_space_types = ['Conference']
     # Standard space types for auxiliary rooms
     v_auxiliary_space_types = ['OfficeLarge Data Center',
                                'OfficeLarge Main Data Center']
-    v_other_space_types = ['Attic', '']
+    v_other_space_types = ['Office Attic', 'Attic', '']
 
     i = 1
     # Loop through all space types, group spaces by their types
     v_space_types.each do |space_type|
       # Loop through all spaces of current space type
+      # Puplate the valid options for each space depending on its space type
+      if v_office_space_types.include? space_type.standardsSpaceType.to_s
+        space_type_chs = office_space_type_chs
+      elsif v_conference_space_types.include? space_type.standardsSpaceType.to_s
+        space_type_chs = meeting_space_type_chs
+      else
+        space_type_chs = other_space_type_chs
+      end
+
       v_current_spaces = space_type.spaces
       next if not v_current_spaces.size > 0
       v_current_spaces.each do |current_space|
+
         arg_temp = OpenStudio::Measure::OSArgument::makeChoiceArgument("Space_#{i}_" + current_space.nameString, space_type_chs, true)
         arg_temp.setDisplayName("Space #{i}: " + current_space.nameString)
         # Conditionally set the default choice for the space
         if(v_office_space_types.include? space_type.standardsSpaceType.to_s)
-          arg_temp.setDefaultValue('Office Type 1')
+          arg_temp.setDefaultValue(userLib.Office_t1_name)
         elsif(v_conference_space_types.include? space_type.standardsSpaceType.to_s)
-          arg_temp.setDefaultValue('Meeting Room Type 1')
+          arg_temp.setDefaultValue(userLib.meetingRoom_t1_name)
         elsif(v_auxiliary_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue('Auxiliary')
         elsif(v_other_space_types.include? space_type.standardsSpaceType.to_s)
@@ -129,7 +134,6 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     return model
   end
 
-  #
   # [assignOccType description]
   # @param probabilityDct [Hash] A hash table of occupancy type and its probability
   #
@@ -277,16 +281,8 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
   # @return [type] [description]
 def obXML_builder(osModel, userLib, outPath, all_args)
     # Get general information ----------------------------------------------------
-
-    # Get which space types are assigned to be default occupanct assumptions
-    flag_space_type_occ_default = all_args[0] # Hash
     # Get specific occupancy assumptions for each space
-    flag_space_occ_choice = all_args[1]
-
-    # puts flag_space_type_occ_default
-    # puts flag_space_occ_choice
-    
-
+    flag_space_occ_choice = all_args[0]
     space_rules = space_rule_hash_wrapper(userLib)
 
     v_space_types = osModel.getSpaceTypes
@@ -900,24 +896,53 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   end
 
 
-  def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
-    # Create people activity schedule
-    people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
-    people_activity_sch.setName('obFMU Activity Schedule')
-    people_activity_sch.setToConstantValue(110.7)
-    # Test create new people and people definition instances
-    new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
-    new_people = OpenStudio::Model::People.new(new_people_def)
-    new_people_def.setName(space_name + ' people definition')
-    # Set OS:People:Definition attributes
-    new_people_def.setName(space_name + ' people definition')
-    # !! Need to set the number of people calculation method
-    # Set OS:People attributes 
-    new_people.setName(space_name + ' people')
-    new_people.setActivityLevelSchedule(people_activity_sch)
-    people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
-    new_people.setNumberofPeopleSchedule(people_sch)
-    new_people.setSpace(model.getSpaces[0])
+def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
+    puts '----------------------------------------------------------------------'
+    puts 'Current space scanned: ' + space_name
+    space_rules = space_rule_hash_wrapper(userLib)
+    occ_type_arg_vals = all_args[0]
+    space_ID_map = all_args[1]
+    space_type_selected = occ_type_arg_vals[space_name]
+
+    puts 'Corresponding user selected space type: ' + space_type_selected
+    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~'
+    # Only office and meeting spaces have space rules for now
+    if not space_rules[space_type_selected].nil?
+      puts 'Proceed...'
+      # Create people activity schedule
+      people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
+      people_activity_sch.setName('obFMU Activity Schedule')
+      people_activity_sch.setToConstantValue(110.7)
+    
+      # Set OS:People:Definition attributes
+      new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+      puts "Set people definition name: " + new_people_def.setName(space_name + ' people definition').to_s
+    
+      # Test create new people and people definition instances
+      new_people = OpenStudio::Model::People.new(new_people_def)
+      puts "Set people name: " + new_people.setName(space_name + ' people').to_s
+      puts "Set people activity schedule: " + new_people.setActivityLevelSchedule(people_activity_sch).to_s
+
+      # Check if the space is office or meeting room.
+      if space_rules[space_type_selected]['OccupancyDensity'].nil?
+        # The current space is a meeting room
+        n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
+        puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People', 1).to_s
+        puts "Set number of people: " + new_people_def.setNumberofPeople(n_people).to_s
+      else
+        # The current space is a office room
+        people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
+        puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1).to_s
+        puts "Set people per floor area: " + new_people_def.setPeopleperSpaceFloorArea(people_per_area).to_s
+      end
+      # Map the schedule to space
+      # Get the column number in the output schedule file by space name
+      col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
+      puts 'Column in the csv file: ' + col_number.to_s
+      people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 1)
+      new_people.setNumberofPeopleSchedule(people_sch)
+      new_people.setSpace(model.getSpaces[0])
+    end
     return model
   end
 
@@ -947,14 +972,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     # report initial condition of model
     runner.registerInitialCondition("Start.")
 
-    ### Get user input for whether to use default assumptions by space types
+    # ### Get user input for whether to use default assumptions by space types
     v_space_types = model.getSpaceTypes
-    space_type_arg_vals = {}
-    v_space_types.each do |space_type|
-      space_type_name = space_type.name.get.to_s
-      st_val = runner.getBoolArgumentValue("#{space_type_name}_val", user_arguments)
-      space_type_arg_vals[space_type_name] = st_val
-    end
 
     ### Get user selected occupancy assumptions for each space
     i = 1
@@ -971,43 +990,35 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       end
     end
 
-
-    all_args = [space_type_arg_vals, occ_type_arg_vals]
+    all_args = []
+    all_args[0] = occ_type_arg_vals
     # Read obXML file and call obFMU.exe
     # For now, we assume obXML is generated in the same path under ./OSimulator_out
     output_path = obFMU_path + 'OccSimulator_out'
     xml_path = obFMU_path + 'XMLs/' # where the obXMl and coSimXML files are stored
     xml_file_name = xml_path + "obXML.xml"
     co_sim_file_name = xml_path + "obCoSim.xml"
-    output_file_name = output_path + "/OccSch_out"
-
+    output_file_name = output_path + "/OccSch_out_IDF"
 
     # Generate obXML and coSimXML files
     # Read user library
     userLib = UserLibrary.new(obFMU_path + "library.csv")
-    all_args[2] = obXML_builder(model, userLib, xml_path, all_args)
+    space_ID_map = obXML_builder(model, userLib, xml_path, all_args)
     coSimXML_builder(xml_path)
 
     # Command to call obFMU.exe
     system(obFMU_path + 'obFMU.exe', xml_file_name, output_file_name, co_sim_file_name)
-
-
-    # Read schedule back to osm
-    # get_os_schedule_from_csv((output_file_name + '.csv'), model, 3, 7)
-
-    model = set_schedule_for_people(model, 'space_name', (output_file_name + '.csv'), userLib, all_args)
-
-    puts all_args
-
-
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
 
     # Read schedule file from csv
     # Update: Han Li 2018/9/14
-    
-
-
-
+    # Read schedule back to osm
+    runner.registerInfo("Reading stochastic occupancy schedule back to the osm.")
+    all_args[1] = space_ID_map 
+    model.getSpaces.each do |space|
+      model = set_schedule_for_people(model, space.name.to_s, (output_file_name + '.csv'), userLib, all_args)
+    end
+    runner.registerInfo("Occupancy schedule updated.")
     # report final condition of model
     runner.registerFinalCondition("End.")
 

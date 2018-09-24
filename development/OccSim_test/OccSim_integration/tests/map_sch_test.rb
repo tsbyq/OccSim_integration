@@ -131,22 +131,18 @@ end
 
 
 def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
-
   puts '----------------------------------------------------------------------'
   puts 'Current space scanned: ' + space_name
-
   space_rules = space_rule_hash_wrapper(userLib)
   occ_type_arg_vals = all_args[1]
   space_ID_map = all_args[2]
   space_type_selected = occ_type_arg_vals[space_name]
 
   puts 'Corresponding user selected space type: ' + space_type_selected
-  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
+  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~'
   # Only office and meeting spaces have space rules for now
   if not space_rules[space_type_selected].nil?
     puts 'Proceed...'
-
     # Create people activity schedule
     people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
     people_activity_sch.setName('obFMU Activity Schedule')
@@ -173,7 +169,6 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
       puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1).to_s
       puts "Set people per floor area: " + new_people_def.setPeopleperSpaceFloorArea(people_per_area).to_s
     end
-
     # Map the schedule to space
     # Get the column number in the output schedule file by space name
     col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
@@ -181,12 +176,7 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 1)
     new_people.setNumberofPeopleSchedule(people_sch)
     new_people.setSpace(model.getSpaces[0])
-
   end
-  # puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Results ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-  # puts new_people_def
-  # puts new_people
-  # puts people_activity_sch
   return model
 end
 
@@ -250,14 +240,16 @@ def single_zone_test
   peopleDefs = model.getPeopleDefinitions
 
   # puts peoples[0]
-  puts peopleDefs[0]
-  puts peopleDefs[0].numberofPeopleCalculationMethod
-  puts peopleDefs[0].numberofPeopleCalculationMethod.class.name
-  puts peopleDefs[0].setNumberOfPeopleCalculationMethod('People/Area', 2)
+  # puts peopleDefs[0]
+  # puts peopleDefs[0].numberofPeopleCalculationMethod
+  # puts peopleDefs[0].numberofPeopleCalculationMethod.class.name
+  # puts peopleDefs[0].setNumberOfPeopleCalculationMethod('People/Area', 2)
+  
+  puts model.getSpaces[0].spaceType.methods
 
 
 end
 
-main()
+# main()
 
-# single_zone_test()
+single_zone_test()

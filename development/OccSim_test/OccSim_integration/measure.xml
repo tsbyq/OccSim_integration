@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>bd9ee0f8-074e-4aa8-aa40-4e1c10fbe3ec</version_id>
-  <version_modified>20180924T183044Z</version_modified>
+  <version_id>d86881c2-3dbd-4e31-a109-cb3ca884d45c</version_id>
+  <version_modified>20180924T222515Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -81,12 +81,6 @@
       <checksum>4C230DF1</checksum>
     </file>
     <file>
-      <filename>map_sch_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>83CEC238</checksum>
-    </file>
-    <file>
       <filename>obXML_builder_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
@@ -105,6 +99,12 @@
       <checksum>3D1AAA9E</checksum>
     </file>
     <file>
+      <filename>map_sch_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>D3F162DD</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>2.4.0</identifier>
@@ -113,7 +113,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>2BEC9E42</checksum>
+      <checksum>A2EFBCEB</checksum>
     </file>
   </files>
 </measure>
