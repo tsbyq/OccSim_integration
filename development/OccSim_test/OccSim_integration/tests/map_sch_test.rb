@@ -175,44 +175,19 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     end
 
     # Map the schedule to space
-    people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
+    # Get the column number in the output schedule file by space name
+    col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
+    puts 'Column in the csv file: ' + col_number.to_s
+    people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 1)
     new_people.setNumberofPeopleSchedule(people_sch)
-
     new_people.setSpace(model.getSpaces[0])
 
-
   end
-
-  # occ_type_arg_vals.each do |key_space_name, space_type_selected|
-  #   if key_space_name == space_name
-  #     puts 'User selected space type from library: ' + key_space_name + '----' + space_type_selected
-  #     puts space_rules[space_type_selected]
-  #     puts 'Index when generating schedule: ' + space_ID_map[key_space_name].to_s
-
-  #     puts new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
-  #     puts new_people_def.setPeopleperSpaceFloorArea(192)
-
-
-  #   end
-  # end
-
-  # !! Need to set the number of people calculation method
-  # Set OS:People attributes 
-
-  # # Set to the right space !!!
-  # model.getSpaces.each do |space|
-  #   if space.nameString == space_name
-  #     puts space_name
-  #   end
-  # end
-
-  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Results ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-  puts new_people_def
-  puts new_people
+  # puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Results ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+  # puts new_people_def
+  # puts new_people
   # puts people_activity_sch
-
   return model
-
 end
 
 
@@ -254,7 +229,8 @@ def main
     model = set_schedule_for_people(model, space.name.to_s, csv_file_path, userLib, all_args)
   end
 
-  # puts model.getSpaces
+
+  puts model
 
 end
 
@@ -265,7 +241,7 @@ def single_zone_test
   obFMU_path = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/'
   output_path = obFMU_path + 'OccSimulator_out'
   model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/small_office_w_meeting.osm')
-  csv_file_path = './OccSch_out_IDF.csv'
+  csv_file_path = './OccSch_out.csv'
   userLib = UserLibrary.new(obFMU_path + "library.csv")
 
 
