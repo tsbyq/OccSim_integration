@@ -714,6 +714,39 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
 end
 
+
+def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
+
+  all_args.each do |key_space_name, space_type_selected|
+    if key_space_name == space_name
+      puts 'User selected space type from library: ' + key_space_name + '----' + space_type_selected
+    end
+  end
+
+  # Create people activity schedule
+  people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
+  people_activity_sch.setName('obFMU Activity Schedule')
+  people_activity_sch.setToConstantValue(110.7)
+  # Test create new people and people definition instances
+  new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+  new_people = OpenStudio::Model::People.new(new_people_def)
+  new_people_def.setName(space_name + ' people definition')
+  # Set OS:People:Definition attributes
+  new_people_def.setName(space_name + ' people definition')
+  # !! Need to set the number of people calculation method
+  # Set OS:People attributes 
+  new_people.setName(space_name + ' people')
+  new_people.setActivityLevelSchedule(people_activity_sch)
+
+  # Find the correct column in the output schedule csv file !!! 
+  people_sch = get_os_schedule_from_csv(csv_file, model, col = 3, skip_row = 7)
+  new_people.setNumberofPeopleSchedule(people_sch)
+  new_people.setSpace(model.getSpaces[0])
+  return model
+
+end
+
+
 def main
   obFMU_path = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/'
   output_path = obFMU_path + 'OccSimulator_out'

@@ -11,7 +11,7 @@
 <StartMonth>1</StartMonth>
 <StartDay>1</StartDay>
 <EndMonth>12</EndMonth>
-<EndDay>31</EndDay>
+<EndDay>30</EndDay>
 <NumberofTimestepsPerHour>6</NumberofTimestepsPerHour>
 </SimulationSettings>
 </CoSimulationParameters>

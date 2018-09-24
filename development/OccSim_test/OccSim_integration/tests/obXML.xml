@@ -74,18 +74,18 @@
 <Occupants>
 <Occupant ID='S2_Perimeter_ZN_1_test_O1'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O2'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O3'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O4'>
 <LifeStyle>Norm</LifeStyle>
@@ -94,8 +94,8 @@
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O5'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O6'>
 <LifeStyle>Norm</LifeStyle>
@@ -104,13 +104,13 @@
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O7'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O8'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O9'>
 <LifeStyle>Norm</LifeStyle>
@@ -124,8 +124,8 @@
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_1_test_O11'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_2_test_O1'>
 <LifeStyle>Norm</LifeStyle>
@@ -379,19 +379,34 @@
 </Behaviors>
 <Holidays>
 <Holiday>
-<Date>1/1/2018</Date>
+<Date>2018-01-01</Date>
 </Holiday>
 <Holiday>
-<Date>7/4/2018</Date>
+<Date>2018-01-18</Date>
 </Holiday>
 <Holiday>
-<Date>9/5/2018</Date>
+<Date>2018-02-15</Date>
 </Holiday>
 <Holiday>
-<Date>10/10/2018</Date>
+<Date>2018-05-30</Date>
 </Holiday>
 <Holiday>
-<Date>11/11/2018</Date>
+<Date>2018-07-04</Date>
+</Holiday>
+<Holiday>
+<Date>2018-09-05</Date>
+</Holiday>
+<Holiday>
+<Date>2018-10-10</Date>
+</Holiday>
+<Holiday>
+<Date>2018-11-11</Date>
+</Holiday>
+<Holiday>
+<Date>2018-11-24</Date>
+</Holiday>
+<Holiday>
+<Date>2018-12-25</Date>
 </Holiday>
 </Holidays>
 </OccupantBehavior>

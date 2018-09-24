@@ -158,7 +158,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     end
   end
 
-def space_rule_hash_wrapper(userLib)
+  def space_rule_hash_wrapper(userLib)
       # Create hashes to store space rules available in the library
     # Office spaces
     office_t1 = {
@@ -298,7 +298,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     v_occBhvrID = Array.new()
     v_occBhvrID = ["Regular_staff_0", "Manager_0", "Administrator_0"]
     v_holidays = Array.new()
-    v_holidays = [userLib.usHolidayNewYearsDay,
+    v_holidays = [
+      userLib.usHolidayNewYearsDay,
       userLib.usHolidayMartinLutherKingJrDay,
       userLib.usHolidayGeorgeWashingtonsBirthday,
       userLib.usHolidayMemorialDay,
@@ -312,15 +313,18 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       userLib.customHolidayCustomHoliday_2,
       userLib.customHolidayCustomHoliday_3,
       userLib.customHolidayCustomHoliday_4,
-      userLib.customHolidayCustomHoliday_5]
+      userLib.customHolidayCustomHoliday_5
+    ]
 
     # Consider the space to be an office space if the space type is in the list
-    v_office_space_types = ['WholeBuilding - Sm Office',
+    v_office_space_types = [
+      'WholeBuilding - Sm Office',
       'WholeBuilding - Md Office',
       'WholeBuilding - Lg Office',
       'Office',
       'ClosedOffice',
-      'OpenOffice']
+      'OpenOffice'
+    ]
 
     # Consider the space to be a conference space is the type is in the list
     v_conference_space_types = ['Conference']
@@ -386,6 +390,9 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
     # Add spaces to the building
     all_index = 0
+
+    # Create a hash to store the space and index
+    space_ID_map = Hash.new
     
     # ~ Meeting room spaces
     v_meetingSpaces.each_with_index do |meetingSpace, index|
@@ -399,12 +406,16 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       probabilityOf_60_minMeetings = space_rules[space_type_selected]['ProbabilityOf_60_minMeetings']
       probabilityOf_90_minMeetings = space_rules[space_type_selected]['ProbabilityOf_90_minMeetings']
       probabilityOf_120_minMeetings = space_rules[space_type_selected]['ProbabilityOf_120_minMeetings']
-      # Assign the information based on user library for now !!!!!!!!
+
+      # Assign the space id and name, and save it to the hash
       spaceIDString = "S#{index + 1 + all_index}_#{meetingSpaceName}"
+      space_ID_map[meetingSpaceName] = index + 1 + all_index
+
       f.puts("<Space ID='" + spaceIDString + "'>")
       f.puts("<Type>MeetingRoom</Type>")
       f.puts("<MeetingEvent>")
       f.puts("<SeasonType>All</SeasonType>")
+      f.puts('<DayofWeek>Weekdays</DayofWeek>')
       f.puts("<MinNumOccupantsPerMeeting>#{min_occupant_per_meeting}</MinNumOccupantsPerMeeting>")
       f.puts("<MaxNumOccupantsPerMeeting>#{max_occupant_per_meeting}</MaxNumOccupantsPerMeeting>")
       f.puts("<MinNumberOfMeetingsPerDay>#{min_meeting_per_day}</MinNumberOfMeetingsPerDay>")
@@ -443,7 +454,10 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       officeSpaceName = officeSpace.nameString
       space_type_selected = flag_space_occ_choice[officeSpaceName]
       nOcc = (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
-      spaceIDString = "S#{index + 1 + all_index}_#{officeSpaceName}" + '_test'
+
+      # Assign the space id and name, and save it to the hash
+      spaceIDString = "S#{index + 1 + all_index}_#{officeSpaceName}"
+      space_ID_map[officeSpaceName] = index + 1 + all_index
 
       f.puts("<Space ID='" +  spaceIDString + "'>")
       f.puts("<Type>OfficeShared</Type>")
@@ -840,6 +854,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     puts 'obXMl.xml file created.'
     puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+    return space_ID_map
+
   end
 
   # This function build a CoSimXMl.xml file
@@ -863,7 +879,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     f.puts('<StartMonth>1</StartMonth>')
     f.puts('<StartDay>1</StartDay>')
     f.puts('<EndMonth>12</EndMonth>')
-    f.puts('<EndDay>31</EndDay>')
+    f.puts('<EndDay>30</EndDay>')
     f.puts('<NumberofTimestepsPerHour>6</NumberofTimestepsPerHour>')
     f.puts('</SimulationSettings>')
     ## --Simulation setting
@@ -969,7 +985,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     # Generate obXML and coSimXML files
     # Read user library
     userLib = UserLibrary.new(obFMU_path + "library.csv")
-    obXML_builder(model, userLib, xml_path, all_args)
+    all_args[2] = obXML_builder(model, userLib, xml_path, all_args)
     coSimXML_builder(xml_path)
 
     # Command to call obFMU.exe
@@ -982,6 +998,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     model = set_schedule_for_people(model, 'space_name', (output_file_name + '.csv'), userLib, all_args)
 
     puts all_args
+
 
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
 

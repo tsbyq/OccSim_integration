@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>e3c65891-c851-4d3f-baa9-179501bb8652</version_id>
-  <version_modified>20180921T193755Z</version_modified>
+  <version_id>bd9ee0f8-074e-4aa8-aa40-4e1c10fbe3ec</version_id>
+  <version_modified>20180924T183044Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -84,25 +84,25 @@
       <filename>map_sch_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>4A65D2FE</checksum>
-    </file>
-    <file>
-      <filename>library.csv</filename>
-      <filetype>csv</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>84F157F5</checksum>
+      <checksum>83CEC238</checksum>
     </file>
     <file>
       <filename>obXML_builder_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>60244A0F</checksum>
+      <checksum>CB7B2DC6</checksum>
+    </file>
+    <file>
+      <filename>library.csv</filename>
+      <filetype>csv</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>F07CDD4B</checksum>
     </file>
     <file>
       <filename>obXML.xml</filename>
       <filetype>xml</filetype>
       <usage_type>test</usage_type>
-      <checksum>82CA41D7</checksum>
+      <checksum>3D1AAA9E</checksum>
     </file>
     <file>
       <version>
@@ -113,7 +113,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>5526EB24</checksum>
+      <checksum>2BEC9E42</checksum>
     </file>
   </files>
 </measure>
