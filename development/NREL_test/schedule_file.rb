@@ -3,12 +3,7 @@ require './baseline_model'
 
 
 
-
 model = BaselineModel.new
-
-
-
-# puts model.methods
 
 
 
@@ -79,6 +74,8 @@ end
 #save the OpenStudio model (.osm)
 model.save_openstudio_osm({"osm_save_directory" => Dir.pwd + '/output',
                            "osm_name" => "baseline_SchFile_test.osm"})
+
+puts model.methods
 
 
 

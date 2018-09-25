@@ -130,16 +130,39 @@ def get_os_schedule_from_csv(file_name, model, col, skip_row)
 end
 
 
+def single_zone_test
+  require 'C:/openstudio-2.6.2/Ruby/openstudio'
+  require 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/UserLibrary.rb'
+
+  obFMU_path = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/'
+  output_path = obFMU_path + 'OccSimulator_out'
+  model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/small_office_w_meeting.osm')
+  csv_file_path = './OccSch_out.csv'
+  userLib = UserLibrary.new(obFMU_path + "library.csv")
+
+  peoples = model.getPeoples
+  peopleDefs = model.getPeopleDefinitions
+
+  # puts peoples[0]
+  # puts peopleDefs[0]
+  # puts peopleDefs[0].numberofPeopleCalculationMethod
+  # puts peopleDefs[0].numberofPeopleCalculationMethod.class.name
+  # puts peopleDefs[0].setNumberOfPeopleCalculationMethod('People/Area', 2)
+  
+  puts model.getSpaces[0].spaceType.methods
+
+end
+
 def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
-  puts '----------------------------------------------------------------------'
-  puts 'Current space scanned: ' + space_name
+  # puts '----------------------------------------------------------------------'
+  # puts 'Current space scanned: ' + space_name
   space_rules = space_rule_hash_wrapper(userLib)
   occ_type_arg_vals = all_args[1]
   space_ID_map = all_args[2]
   space_type_selected = occ_type_arg_vals[space_name]
 
-  puts 'Corresponding user selected space type: ' + space_type_selected
-  puts '~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~'
+  # puts 'Corresponding user selected space type: ' + space_type_selected
+  # puts '~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~'
   # Only office and meeting spaces have space rules for now
   if not space_rules[space_type_selected].nil?
     puts 'Proceed...'
@@ -173,9 +196,15 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Get the column number in the output schedule file by space name
     col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
     puts 'Column in the csv file: ' + col_number.to_s
-    people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 1)
-    new_people.setNumberofPeopleSchedule(people_sch)
-    new_people.setSpace(model.getSpaces[0])
+    people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 7)
+    puts new_people.setNumberofPeopleSchedule(people_sch)
+
+    model.getSpaces.each do |current_space|
+      if current_space.nameString == space_name
+        new_people.setSpace(current_space)
+      end
+    end
+
   end
   return model
 end
@@ -187,8 +216,10 @@ def main
 
   obFMU_path = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/'
   output_path = obFMU_path + 'OccSimulator_out'
-  model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/small_office_w_meeting.osm')
+  # model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/small_office_w_meeting.osm')
+  model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/tests/Final/small_office.osm')
   csv_file_path = './OccSch_out_IDF.csv'
+
   userLib = UserLibrary.new(obFMU_path + "library.csv")
 
   occ_type_arg_vals = {
@@ -214,42 +245,29 @@ def main
   all_args[2] = space_ID_map
 
   # puts all_args
+  # Remove all people object (if exist) in the old model
+  model.getPeoples.each do |os_people|
+    os_people.remove
+  end
+
+  model.getPeopleDefinitions.each do |os_people_def|
+    os_people_def.remove
+  end
 
   model.getSpaces.each do |space|
     model = set_schedule_for_people(model, space.name.to_s, csv_file_path, userLib, all_args)
   end
 
+  # puts model
 
-  puts model
+  pp = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/tests/Final/save_model'
 
-end
-
-def single_zone_test
-  require 'C:/openstudio-2.6.2/Ruby/openstudio'
-  require 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/UserLibrary.rb'
-
-  obFMU_path = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/resources/'
-  output_path = obFMU_path + 'OccSimulator_out'
-  model = loadOSM('C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OSM_2.6.2/small_office_w_meeting.osm')
-  csv_file_path = './OccSch_out.csv'
-  userLib = UserLibrary.new(obFMU_path + "library.csv")
-
-
-  
-  peoples = model.getPeoples
-  peopleDefs = model.getPeopleDefinitions
-
-  # puts peoples[0]
-  # puts peopleDefs[0]
-  # puts peopleDefs[0].numberofPeopleCalculationMethod
-  # puts peopleDefs[0].numberofPeopleCalculationMethod.class.name
-  # puts peopleDefs[0].setNumberOfPeopleCalculationMethod('People/Area', 2)
-  
-  puts model.getSpaces[0].spaceType.methods
-
+  File.open(pp + '/new.osm', 'w') { |file| file.write(model) }
 
 end
 
-# main()
 
-single_zone_test()
+
+main()
+
+# single_zone_test()

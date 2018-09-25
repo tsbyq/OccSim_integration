@@ -325,11 +325,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     # Consider the space to be a conference space is the type is in the list
     v_conference_space_types = ['Conference']
 
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-    puts 'User selected space types:' 
-    puts flag_space_occ_choice
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
     # Loop through all space types
     v_space_types.each do |space_type|
       # puts space_type.standardsSpaceType.to_s
@@ -897,18 +892,15 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
 
 def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
-    puts '----------------------------------------------------------------------'
-    puts 'Current space scanned: ' + space_name
     space_rules = space_rule_hash_wrapper(userLib)
     occ_type_arg_vals = all_args[0]
     space_ID_map = all_args[1]
     space_type_selected = occ_type_arg_vals[space_name]
 
-    puts 'Corresponding user selected space type: ' + space_type_selected
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~ Space Rules ~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
     # Only office and meeting spaces have space rules for now
     if not space_rules[space_type_selected].nil?
-      puts 'Proceed...'
+
       # Create people activity schedule
       people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
       people_activity_sch.setName('obFMU Activity Schedule')
@@ -916,32 +908,38 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     
       # Set OS:People:Definition attributes
       new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
-      puts "Set people definition name: " + new_people_def.setName(space_name + ' people definition').to_s
+      new_people_def.setName(space_name + ' people definition')
     
       # Test create new people and people definition instances
       new_people = OpenStudio::Model::People.new(new_people_def)
-      puts "Set people name: " + new_people.setName(space_name + ' people').to_s
-      puts "Set people activity schedule: " + new_people.setActivityLevelSchedule(people_activity_sch).to_s
+      new_people.setName(space_name + ' people')
+      new_people.setActivityLevelSchedule(people_activity_sch)
 
       # Check if the space is office or meeting room.
       if space_rules[space_type_selected]['OccupancyDensity'].nil?
         # The current space is a meeting room
         n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
-        puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People', 1).to_s
-        puts "Set number of people: " + new_people_def.setNumberofPeople(n_people).to_s
+        new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
+        new_people_def.setNumberofPeople(n_people)
       else
         # The current space is a office room
         people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
-        puts "Set number of people calculation method: " + new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1).to_s
-        puts "Set people per floor area: " + new_people_def.setPeopleperSpaceFloorArea(people_per_area).to_s
+        new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
+        new_people_def.setPeopleperSpaceFloorArea(people_per_area)
       end
       # Map the schedule to space
       # Get the column number in the output schedule file by space name
       col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
-      puts 'Column in the csv file: ' + col_number.to_s
-      people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 1)
+      people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 7)
       new_people.setNumberofPeopleSchedule(people_sch)
-      new_people.setSpace(model.getSpaces[0])
+
+      # Add schedule to the right space
+      model.getSpaces.each do |current_space|
+        if current_space.nameString == space_name
+          new_people.setSpace(current_space)
+        end
+      end
+
     end
     return model
   end
@@ -959,6 +957,8 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
 
     # get current file directory
     obFMU_path = File.dirname(__FILE__) + '/resources/'
+
+    puts File.dirname(__FILE__) + '/resources/'
 
     # check the obFMU_path for reasonableness
     if obFMU_path.empty?
@@ -998,7 +998,7 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     xml_path = obFMU_path + 'XMLs/' # where the obXMl and coSimXML files are stored
     xml_file_name = xml_path + "obXML.xml"
     co_sim_file_name = xml_path + "obCoSim.xml"
-    output_file_name = output_path + "/OccSch_out_IDF"
+    output_file_name = output_path + "/OccSch_out"
 
     # Generate obXML and coSimXML files
     # Read user library
@@ -1014,10 +1014,23 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Update: Han Li 2018/9/14
     # Read schedule back to osm
     runner.registerInfo("Reading stochastic occupancy schedule back to the osm.")
-    all_args[1] = space_ID_map 
-    model.getSpaces.each do |space|
-      model = set_schedule_for_people(model, space.name.to_s, (output_file_name + '.csv'), userLib, all_args)
+    all_args[1] = space_ID_map
+
+
+    # Remove all people object (if exist) in the old model
+    model.getPeoples.each do |os_people|
+      os_people.remove
     end
+
+    model.getPeopleDefinitions.each do |os_people_def|
+      os_people_def.remove
+    end
+
+    # Add schedule:file to model
+    model.getSpaces.each do |space|
+      model = set_schedule_for_people(model, space.name.to_s, (output_file_name + '_IDF.csv'), userLib, all_args)
+    end
+
     runner.registerInfo("Occupancy schedule updated.")
     # report final condition of model
     runner.registerFinalCondition("End.")
