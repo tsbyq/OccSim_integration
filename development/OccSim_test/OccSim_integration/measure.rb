@@ -893,9 +893,10 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
     external_file = external_file.get
     schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
+    # schedule_type_limit = OpenStudio::Model::ScheduleTypeLimits .new(model)
+    # schedule_file.setScheduleTypeLimits(schedule_type_limit)
     return schedule_file
   end
-
 
 def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     space_rules = space_rule_hash_wrapper(userLib)
@@ -904,13 +905,13 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     n_occ_hash = all_args[2]
     space_type_selected = occ_type_arg_vals[space_name]
 
-    puts '******'
-    puts space_name
-    puts n_occ_hash[space_name]
-
 
     # Only office and meeting spaces have space rules for now
     if not space_rules[space_type_selected].nil?
+
+      puts '******'
+      puts space_name
+      puts n_occ_hash[space_name]
 
       # Create people activity schedule
       people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
@@ -929,14 +930,22 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
       # Check if the space is office or meeting room.
       if space_rules[space_type_selected]['OccupancyDensity'].nil?
         # The current space is a meeting room
-        n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
+        # n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
+        
+        n_people = n_occ_hash[space_name]
         new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
         new_people_def.setNumberofPeople(n_people)
       else
         # The current space is a office room
-        people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
-        new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
-        new_people_def.setPeopleperSpaceFloorArea(people_per_area)
+        # people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
+        # new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
+
+        n_people = n_occ_hash[space_name]
+        new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
+        new_people_def.setNumberofPeople(n_people)
+        # new_people_def.setPeopleperSpaceFloorArea(people_per_area)
+
+        # puts people_per_area
       end
       # Map the schedule to space
       # Get the column number in the output schedule file by space name
