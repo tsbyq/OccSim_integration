@@ -869,14 +869,14 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     ## --SpaceNameMapping
     ## Simulation setting
     f.puts('<SimulationSettings>')
-    f.puts('<IsLeapYear>Yes</IsLeapYear>')
+    f.puts('<IsLeapYear>No</IsLeapYear>')
     f.puts('<DayofWeekForStartDay>Monday</DayofWeekForStartDay>')
     f.puts('<IsDebugMode>No</IsDebugMode>')
     f.puts('<DoMovementCalculation>Yes</DoMovementCalculation>')
     f.puts('<StartMonth>1</StartMonth>')
     f.puts('<StartDay>1</StartDay>')
     f.puts('<EndMonth>12</EndMonth>')
-    f.puts('<EndDay>30</EndDay>')
+    f.puts('<EndDay>31</EndDay>')
     f.puts('<NumberofTimestepsPerHour>6</NumberofTimestepsPerHour>')
     f.puts('</SimulationSettings>')
     ## --Simulation setting
@@ -951,6 +951,9 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
       # Get the column number in the output schedule file by space name
       col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
       people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 7)
+      # Set minute per item (timestep = 10min) May need to change !!!
+      people_sch.setMinutesperItem('10')
+
       new_people.setNumberofPeopleSchedule(people_sch)
 
       # Add schedule to the right space

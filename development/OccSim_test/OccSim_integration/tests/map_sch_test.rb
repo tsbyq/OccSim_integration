@@ -252,7 +252,11 @@ def set_schedule_for_people_clean(model, space_name, csv_file, userLib, all_args
     # Get the column number in the output schedule file by space name
     col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
     people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 7)
+    # Set minute per item (timestep = 10min) May need to change !!!
+    people_sch.setMinutesperItem('10')
     new_people.setNumberofPeopleSchedule(people_sch)
+
+
 
     # Add schedule to the right space
     model.getSpaces.each do |current_space|
