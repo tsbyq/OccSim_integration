@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>97ab30a3-6637-4adc-a87f-0f100355dc15</version_id>
-  <version_modified>20180925T010215Z</version_modified>
+  <version_id>19bbb2e5-f032-4dee-9baf-54485f3c5df3</version_id>
+  <version_modified>20180926T001355Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -78,7 +78,7 @@
       <filename>map_sch_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>2FB5AE76</checksum>
+      <checksum>892A9014</checksum>
     </file>
     <file>
       <version>
@@ -89,7 +89,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>48B15CEB</checksum>
+      <checksum>B2FE168A</checksum>
     </file>
   </files>
 </measure>

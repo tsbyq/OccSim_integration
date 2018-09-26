@@ -351,9 +351,13 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     # Number of space and number of people
     n_space = v_officeSpaces.length
     n_occ = 0
+    n_occ_hash = Hash.new
     v_officeSpaces.each do |officeSpace|
       space_type_selected = flag_space_occ_choice[officeSpace.name.to_s]
-      n_occ += (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
+      n_occ_current = (officeSpace.floorArea / space_rules[space_type_selected]['OccupancyDensity']).floor
+      n_occ += n_occ_current
+      # Save the maximum number of people to a hash
+      n_occ_hash[officeSpace.name.to_s] = n_occ_current
     end
 
     # Generate the obXML file
@@ -401,6 +405,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       # Assign the space id and name, and save it to the hash
       spaceIDString = "S#{index + 1 + all_index}_#{meetingSpaceName}"
       space_ID_map[meetingSpaceName] = index + 1 + all_index
+      n_occ_hash[meetingSpace.nameString] = max_occupant_per_meeting
 
       f.puts("<Space ID='" + spaceIDString + "'>")
       f.puts("<Type>MeetingRoom</Type>")
@@ -845,7 +850,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     puts 'obXMl.xml file created.'
     puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-    return space_ID_map
+    result_hashes = [space_ID_map, n_occ_hash]
+    return result_hashes
 
   end
 
@@ -895,7 +901,12 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     space_rules = space_rule_hash_wrapper(userLib)
     occ_type_arg_vals = all_args[0]
     space_ID_map = all_args[1]
+    n_occ_hash = all_args[2]
     space_type_selected = occ_type_arg_vals[space_name]
+
+    puts '******'
+    puts space_name
+    puts n_occ_hash[space_name]
 
 
     # Only office and meeting spaces have space rules for now
@@ -1003,7 +1014,7 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Generate obXML and coSimXML files
     # Read user library
     userLib = UserLibrary.new(obFMU_path + "library.csv")
-    space_ID_map = obXML_builder(model, userLib, xml_path, all_args)
+    result_hashes = obXML_builder(model, userLib, xml_path, all_args)
     coSimXML_builder(xml_path)
 
     # Command to call obFMU.exe
@@ -1014,7 +1025,12 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Update: Han Li 2018/9/14
     # Read schedule back to osm
     runner.registerInfo("Reading stochastic occupancy schedule back to the osm.")
+
+    space_ID_map = result_hashes[0]
+    n_occ_hash = result_hashes[1]
+
     all_args[1] = space_ID_map
+    all_args[2] = n_occ_hash
 
 
     # Remove all people object (if exist) in the old model

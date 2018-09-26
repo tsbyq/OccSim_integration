@@ -126,9 +126,10 @@ def get_os_schedule_from_csv(file_name, model, col, skip_row)
   external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
   external_file = external_file.get
   schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
+  schedule_type_limit = OpenStudio::Model::ScheduleTypeLimits .new(model)
+  schedule_file.setScheduleTypeLimits(schedule_type_limit)
   return schedule_file
 end
-
 
 def single_zone_test
   require 'C:/openstudio-2.6.2/Ruby/openstudio'
@@ -209,6 +210,61 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
   return model
 end
 
+def set_schedule_for_people_clean(model, space_name, csv_file, userLib, all_args)
+  space_rules = space_rule_hash_wrapper(userLib)
+  occ_type_arg_vals = all_args[1]
+  space_ID_map = all_args[2]
+  space_type_selected = occ_type_arg_vals[space_name]
+
+
+  # Only office and meeting spaces have space rules for now
+  if not space_rules[space_type_selected].nil?
+
+    # Create people activity schedule
+    people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
+    people_activity_sch.setName('obFMU Activity Schedule')
+    people_activity_sch.setToConstantValue(110.7)
+  
+    # Set OS:People:Definition attributes
+    new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
+    new_people_def.setName(space_name + ' people definition')
+  
+    # Test create new people and people definition instances
+    new_people = OpenStudio::Model::People.new(new_people_def)
+    new_people.setName(space_name + ' people')
+    new_people.setActivityLevelSchedule(people_activity_sch)
+
+    puts space_name
+
+    # Check if the space is office or meeting room.
+    if space_rules[space_type_selected]['OccupancyDensity'].nil?
+      # The current space is a meeting room
+      n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
+      new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
+      new_people_def.setNumberofPeople(n_people)
+    else
+      # The current space is a office room
+      people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
+      new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
+      new_people_def.setPeopleperSpaceFloorArea(people_per_area)
+    end
+    # Map the schedule to space
+    # Get the column number in the output schedule file by space name
+    col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
+    people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 7)
+    new_people.setNumberofPeopleSchedule(people_sch)
+
+    # Add schedule to the right space
+    model.getSpaces.each do |current_space|
+      if current_space.nameString == space_name
+        new_people.setSpace(current_space)
+      end
+    end
+  end
+
+  return model
+end
+
 
 def main
   require 'C:/openstudio-2.6.2/Ruby/openstudio'
@@ -255,18 +311,46 @@ def main
   end
 
   model.getSpaces.each do |space|
-    model = set_schedule_for_people(model, space.name.to_s, csv_file_path, userLib, all_args)
+    # model = set_schedule_for_people(model, space.name.to_s, csv_file_path, userLib, all_args)
+    model = set_schedule_for_people_clean(model, space.name.to_s, csv_file_path, userLib, all_args)
   end
 
   # puts model
+  puts '-----------------------------------------------------------------------'
 
-  pp = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/tests/Final/save_model'
+  root_path = File.dirname(__FILE__) + '/resources/'
 
-  File.open(pp + '/new.osm', 'w') { |file| file.write(model) }
+  puts root_path
+
+
+
+  # model.getExternalFiles.each do |external_file|
+
+  #   puts external_file.fileName == 'OccSch_out_IDF.csv'
+  #   puts external_file.filePath
+  #   puts model.getExternalFiles[0].setString(2, '1') # Set the csv file with absolute path
+  # end
+
+
+  # # puts model.getExternalFiles[0]
+  # puts '-----------------------------------------------------------------------'
+  # puts model.getExternalFiles[0]
+  # puts model.getExternalFiles[0].getString(-1)
+  # puts model.getExternalFiles[0].getString(0)
+  # puts model.getExternalFiles[0].getString(1)
+  # puts model.getExternalFiles[0].getString(2)
+  # puts model.getExternalFiles[0].setString(2, '1')
+  # puts model.getExternalFiles[0]
+
+  pp = 'C:/Users/Han/Documents/GitHub/OpenStudio_related/OccSim_integration/development/OccSim_test/OccSim_integration/tests/Final/SO'
+
+  File.open(pp + '/stand_alone.osm', 'w') { |file| file.write(model) }
 
 end
 
 
+
+# test()
 
 main()
 

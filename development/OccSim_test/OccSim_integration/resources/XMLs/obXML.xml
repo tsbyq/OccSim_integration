@@ -87,18 +87,18 @@
 </Occupant>
 <Occupant ID='S1_Perimeter_ZN_1_O3'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S1_Perimeter_ZN_1_O4'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S1_Perimeter_ZN_1_O5'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S1_Perimeter_ZN_1_O6'>
 <LifeStyle>Norm</LifeStyle>
@@ -117,38 +117,38 @@
 </Occupant>
 <Occupant ID='S1_Perimeter_ZN_1_O9'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
-</Occupant>
-<Occupant ID='S1_Perimeter_ZN_1_O10'>
-<LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S1_Perimeter_ZN_1_O11'>
+<Occupant ID='S1_Perimeter_ZN_1_O10'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Administrator </JobType>
 <MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
-<Occupant ID='S2_Perimeter_ZN_2_O1'>
+<Occupant ID='S1_Perimeter_ZN_1_O11'>
 <LifeStyle>Norm</LifeStyle>
 <JobType>Regular staff </JobType>
 <MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
+<Occupant ID='S2_Perimeter_ZN_2_O1'>
+<LifeStyle>Norm</LifeStyle>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+</Occupant>
 <Occupant ID='S2_Perimeter_ZN_2_O2'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_2_O3'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_2_O4'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_2_O5'>
 <LifeStyle>Norm</LifeStyle>
@@ -157,8 +157,8 @@
 </Occupant>
 <Occupant ID='S2_Perimeter_ZN_2_O6'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O1'>
 <LifeStyle>Norm</LifeStyle>
@@ -167,8 +167,8 @@
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O2'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O3'>
 <LifeStyle>Norm</LifeStyle>
@@ -177,8 +177,8 @@
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O4'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O5'>
 <LifeStyle>Norm</LifeStyle>
@@ -187,8 +187,8 @@
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O6'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O7'>
 <LifeStyle>Norm</LifeStyle>
@@ -202,8 +202,8 @@
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O9'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S3_Perimeter_ZN_3_O10'>
 <LifeStyle>Norm</LifeStyle>
@@ -217,8 +217,8 @@
 </Occupant>
 <Occupant ID='S4_Perimeter_ZN_4_O1'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S4_Perimeter_ZN_4_O2'>
 <LifeStyle>Norm</LifeStyle>
@@ -232,18 +232,18 @@
 </Occupant>
 <Occupant ID='S4_Perimeter_ZN_4_O4'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S4_Perimeter_ZN_4_O5'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Administrator </JobType>
-<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S4_Perimeter_ZN_4_O6'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Manager </JobType>
+<MovementBehaviorID>Manager_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S5_Core_ZN_O1'>
 <LifeStyle>Norm</LifeStyle>
@@ -272,8 +272,8 @@
 </Occupant>
 <Occupant ID='S5_Core_ZN_O6'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S5_Core_ZN_O7'>
 <LifeStyle>Norm</LifeStyle>
@@ -302,13 +302,13 @@
 </Occupant>
 <Occupant ID='S5_Core_ZN_O12'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Regular staff </JobType>
-<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
+<JobType>Administrator </JobType>
+<MovementBehaviorID>Administrator_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S5_Core_ZN_O13'>
 <LifeStyle>Norm</LifeStyle>
-<JobType>Manager </JobType>
-<MovementBehaviorID>Manager_0 </MovementBehaviorID>
+<JobType>Regular staff </JobType>
+<MovementBehaviorID>Regular_staff_0 </MovementBehaviorID>
 </Occupant>
 <Occupant ID='S5_Core_ZN_O14'>
 <LifeStyle>Norm</LifeStyle>
