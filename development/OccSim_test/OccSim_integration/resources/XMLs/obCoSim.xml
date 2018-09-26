@@ -5,7 +5,7 @@
 </SpaceNameMapping>
 <SimulationSettings>
 <IsLeapYear>No</IsLeapYear>
-<DayofWeekForStartDay>Monday</DayofWeekForStartDay>
+<DayofWeekForStartDay>Sunday</DayofWeekForStartDay>
 <IsDebugMode>No</IsDebugMode>
 <DoMovementCalculation>Yes</DoMovementCalculation>
 <StartMonth>1</StartMonth>

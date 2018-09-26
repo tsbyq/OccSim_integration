@@ -150,7 +150,17 @@ def single_zone_test
   # puts peopleDefs[0].numberofPeopleCalculationMethod.class.name
   # puts peopleDefs[0].setNumberOfPeopleCalculationMethod('People/Area', 2)
   
-  puts model.getSpaces[0].spaceType.methods
+  # puts model.getSpaces[0].spaceType.methods
+
+
+  puts model.runPeriod.get.getBeginMonth
+  puts model.runPeriod.get.getBeginDayOfMonth
+  puts model.runPeriod.get.getEndMonth
+  puts model.runPeriod.get.getEndDayOfMonth
+  puts model.dayofWeekforStartDay
+  puts model.isLeapYear
+  puts model.getTimestep.numberOfTimestepsPerHour
+  # puts model.setDayofWeekforStartDay('Monday')
 
 end
 
@@ -353,9 +363,6 @@ def main
 end
 
 
+# main()
 
-# test()
-
-main()
-
-# single_zone_test()
+single_zone_test()

@@ -857,7 +857,22 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
   # This function build a CoSimXMl.xml file
   # All the fields are default
-  def coSimXML_builder(outPath)
+  def coSimXML_builder(model, outPath)
+    
+    # Get simulation configurations from model
+    if model.isLeapYear
+      isLeapYear = 'Yes'
+    else
+      isLeapYear = 'No'
+    end
+    dayofWeekforStartDay = model.dayofWeekforStartDay
+    beginMonth = model.runPeriod.get.getBeginMonth
+    beginDayOfMonth = model.runPeriod.get.getBeginDayOfMonth
+    endMonth = model.runPeriod.get.getEndMonth
+    endDayOfMonth = model.runPeriod.get.getEndDayOfMonth
+    timestepsPerHour = model.getTimestep.numberOfTimestepsPerHour
+
+    # Write XML to file
     f = File.new(outPath + "obCoSim.xml",  "w")
     # CoSimulationParameters
     f.puts('<CoSimulationParameters>')
@@ -869,15 +884,15 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     ## --SpaceNameMapping
     ## Simulation setting
     f.puts('<SimulationSettings>')
-    f.puts('<IsLeapYear>No</IsLeapYear>')
-    f.puts('<DayofWeekForStartDay>Monday</DayofWeekForStartDay>')
+    f.puts('<IsLeapYear>' + isLeapYear + '</IsLeapYear>')
+    f.puts('<DayofWeekForStartDay>' + dayofWeekforStartDay.to_s + '</DayofWeekForStartDay>')
     f.puts('<IsDebugMode>No</IsDebugMode>')
     f.puts('<DoMovementCalculation>Yes</DoMovementCalculation>')
-    f.puts('<StartMonth>1</StartMonth>')
-    f.puts('<StartDay>1</StartDay>')
-    f.puts('<EndMonth>12</EndMonth>')
-    f.puts('<EndDay>31</EndDay>')
-    f.puts('<NumberofTimestepsPerHour>6</NumberofTimestepsPerHour>')
+    f.puts('<StartMonth>' + beginMonth.to_s + '</StartMonth>')
+    f.puts('<StartDay>' + beginDayOfMonth.to_s + '</StartDay>')
+    f.puts('<EndMonth>' + endMonth.to_s + '</EndMonth>')
+    f.puts('<EndDay>' + endDayOfMonth.to_s + '</EndDay>')
+    f.puts('<NumberofTimestepsPerHour>' + timestepsPerHour.to_s + '</NumberofTimestepsPerHour>')
     f.puts('</SimulationSettings>')
     ## --Simulation setting
     f.puts('</CoSimulationParameters>')
@@ -1027,7 +1042,7 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Read user library
     userLib = UserLibrary.new(obFMU_path + "library.csv")
     result_hashes = obXML_builder(model, userLib, xml_path, all_args)
-    coSimXML_builder(xml_path)
+    coSimXML_builder(model, xml_path)
 
     # Command to call obFMU.exe
     system(obFMU_path + 'obFMU.exe', xml_file_name, output_file_name, co_sim_file_name)
