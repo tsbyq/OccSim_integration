@@ -79,7 +79,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     # Standard space types for auxiliary rooms
     v_auxiliary_space_types = ['OfficeLarge Data Center',
                                'OfficeLarge Main Data Center']
-    v_other_space_types = ['Office Attic', 'Attic', '']
+    v_other_space_types = ['Office Attic', 'Attic', 'Plenum Space Type', '']
 
     i = 1
     # Loop through all space types, group spaces by their types
@@ -996,7 +996,8 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # get current file directory
     obFMU_path = File.dirname(__FILE__) + '/resources/'
 
-    puts File.dirname(__FILE__) + '/resources/'
+    # puts File.dirname(__FILE__) + '/resources/'
+    # puts File.expand_path("../../../", __FILE__)
 
     # check the obFMU_path for reasonableness
     if obFMU_path.empty?
