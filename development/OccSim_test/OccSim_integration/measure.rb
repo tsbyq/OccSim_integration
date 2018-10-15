@@ -388,7 +388,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
     # Create a hash to store the space and index
     space_ID_map = Hash.new
-    
+
     # ~ Meeting room spaces
     v_meetingSpaces.each_with_index do |meetingSpace, index|
       meetingSpaceName = meetingSpace.nameString
@@ -858,7 +858,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   # This function build a CoSimXMl.xml file
   # All the fields are default
   def coSimXML_builder(model, outPath)
-    
+
     # Get simulation configurations from model
     if model.isLeapYear
       isLeapYear = 'Yes'
@@ -913,7 +913,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     return schedule_file
   end
 
-def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
+  def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     space_rules = space_rule_hash_wrapper(userLib)
     occ_type_arg_vals = all_args[0]
     space_ID_map = all_args[1]
@@ -924,6 +924,7 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Only office and meeting spaces have space rules for now
     if not space_rules[space_type_selected].nil?
 
+      # For testing
       puts '******'
       puts space_name
       puts n_occ_hash[space_name]
@@ -932,11 +933,11 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
       people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
       people_activity_sch.setName('obFMU Activity Schedule')
       people_activity_sch.setToConstantValue(110.7)
-    
+
       # Set OS:People:Definition attributes
       new_people_def = OpenStudio::Model::PeopleDefinition.new(model)
       new_people_def.setName(space_name + ' people definition')
-    
+
       # Test create new people and people definition instances
       new_people = OpenStudio::Model::People.new(new_people_def)
       new_people.setName(space_name + ' people')
@@ -946,7 +947,7 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
       if space_rules[space_type_selected]['OccupancyDensity'].nil?
         # The current space is a meeting room
         # n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
-        
+
         n_people = n_occ_hash[space_name]
         new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
         new_people_def.setNumberofPeople(n_people)
@@ -993,24 +994,23 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
       return false
     end
 
-    # get current file directory
-    runner.registerInfo("The current directory is '#{Dir.pwd}'")
-    obFMU_path = File.dirname(__FILE__) + '/'
-
-    # puts File.dirname(__FILE__) + '/resources/'
-    # puts File.expand_path("../../../", __FILE__)
-
-    # check the obFMU_path for reasonableness
-    if obFMU_path.empty?
-      runner.registerError("Empty path was entered.")
-      return false
-    end
-
-    # Load reauired class
-    load obFMU_path + 'UserLibrary.rb'
-
     # report initial condition of model
     runner.registerInitialCondition("Start.")
+
+    # get current file directory
+    model_temp_run_path = Dir.pwd + '/'
+    model_temp_measure_path = File.expand_path("../../..", model_temp_run_path) + '/resources/measures/OccSim_integration/'
+    model_temp_resources_path =File.expand_path("../../..", model_temp_run_path) + '/resources/'
+
+    runner.registerInfo("The current directory is '#{model_temp_run_path}'")
+    obFMU_path = File.dirname(__FILE__) + '/'
+
+    # Load reauired class
+    # Copy the user-defined library to the temp measure folder to enable the measure in the run tab
+    FileUtils.cp(obFMU_path + 'UserLibrary.rb', model_temp_measure_path)
+    FileUtils.cp(obFMU_path + 'library.csv', model_temp_measure_path)
+    load model_temp_measure_path + 'UserLibrary.rb'
+    userLib = UserLibrary.new(model_temp_measure_path + "library.csv")
 
     # ### Get user input for whether to use default assumptions by space types
     v_space_types = model.getSpaceTypes
@@ -1032,27 +1032,34 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
 
     all_args = []
     all_args[0] = occ_type_arg_vals
+
     # Read obXML file and call obFMU.exe
     # For now, we assume obXML is generated in the same path under ./OSimulator_out
     output_path = obFMU_path + 'OccSimulator_out'
     xml_path = obFMU_path  # where the obXMl and coSimXML files are stored
     xml_file_name = xml_path + "obXML.xml"
     co_sim_file_name = xml_path + "obCoSim.xml"
-    
 
     # Change this to the temp path (Dir)
     output_file_name = output_path
 
     # Generate obXML and coSimXML files
-    # Read user library
-    userLib = UserLibrary.new(obFMU_path + "library.csv")
-
     result_hashes = obXML_builder(model, userLib, xml_path, all_args)
     coSimXML_builder(model, xml_path)
 
     # Command to call obFMU.exe
     system(obFMU_path + 'obFMU.exe', xml_file_name, output_file_name, co_sim_file_name)
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
+    # Move the file to the temp folder
+    external_csv_path_old = output_file_name + '_IDF.csv'
+    external_csv_path_new = model_temp_resources_path + external_csv_path_old.split('/')[-1]
+    FileUtils.cp(output_file_name + '_IDF.csv', model_temp_resources_path)
+
+    puts external_csv_path_old
+    puts external_csv_path_new
+
+
+    runner.registerInfo("Occupancy schedule files copied to the temporary folder: #{model_temp_run_path}.")
 
     # Read schedule file from csv
     # Update: Han Li 2018/9/14
@@ -1077,13 +1084,11 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
 
     # Add schedule:file to model
     model.getSpaces.each do |space|
-      model = set_schedule_for_people(model, space.name.to_s, (output_file_name + '_IDF.csv'), userLib, all_args)
+      model = set_schedule_for_people(model, space.name.to_s, external_csv_path_new, userLib, all_args)
     end
 
     runner.registerInfo("Occupancy schedule updated.")
     # report final condition of model
-
-
 
     runner.registerFinalCondition("End.")
 
