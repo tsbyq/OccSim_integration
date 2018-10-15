@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>c1a7335c-c748-4062-a573-fe938d92b425</version_id>
-  <version_modified>20181002T171706Z</version_modified>
+  <version_id>21385190-3249-4f76-9c8b-e6f68dec1225</version_id>
+  <version_modified>20181015T202734Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -39,48 +39,6 @@
   </attributes>
   <files>
     <file>
-      <filename>obFMU.exe</filename>
-      <filetype>exe</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>E658D50D</checksum>
-    </file>
-    <file>
-      <filename>UserLibrary.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>C1D867D0</checksum>
-    </file>
-    <file>
-      <filename>people_set_space.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>803AC1AA</checksum>
-    </file>
-    <file>
-      <filename>obXML_builder_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>CB7B2DC6</checksum>
-    </file>
-    <file>
-      <filename>library.csv</filename>
-      <filetype>csv</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>F07CDD4B</checksum>
-    </file>
-    <file>
-      <filename>OccSch_out_IDF.csv</filename>
-      <filetype>csv</filetype>
-      <usage_type>test</usage_type>
-      <checksum>524300BD</checksum>
-    </file>
-    <file>
-      <filename>map_sch_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>E88E7EC3</checksum>
-    </file>
-    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>2.4.0</identifier>
@@ -89,7 +47,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>A2DB7430</checksum>
+      <checksum>D41E5A5B</checksum>
     </file>
   </files>
 </measure>

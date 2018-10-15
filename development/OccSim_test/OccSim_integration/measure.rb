@@ -33,7 +33,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     ############################################################################
 
     # Read user pre-defined library
-    root_path = File.dirname(__FILE__) + '/resources/'
+    root_path = File.dirname(__FILE__) + '/'
     # Load reauired class and gem files
     load root_path + 'UserLibrary.rb'
     userLib = UserLibrary.new(root_path + "library.csv")
@@ -994,7 +994,8 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     end
 
     # get current file directory
-    obFMU_path = File.dirname(__FILE__) + '/resources/'
+    runner.registerInfo("The current directory is '#{Dir.pwd}'")
+    obFMU_path = File.dirname(__FILE__) + '/'
 
     # puts File.dirname(__FILE__) + '/resources/'
     # puts File.expand_path("../../../", __FILE__)
@@ -1034,14 +1035,18 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
     # Read obXML file and call obFMU.exe
     # For now, we assume obXML is generated in the same path under ./OSimulator_out
     output_path = obFMU_path + 'OccSimulator_out'
-    xml_path = obFMU_path + 'XMLs/' # where the obXMl and coSimXML files are stored
+    xml_path = obFMU_path  # where the obXMl and coSimXML files are stored
     xml_file_name = xml_path + "obXML.xml"
     co_sim_file_name = xml_path + "obCoSim.xml"
-    output_file_name = output_path + "/OccSch_out"
+    
+
+    # Change this to the temp path (Dir)
+    output_file_name = output_path
 
     # Generate obXML and coSimXML files
     # Read user library
     userLib = UserLibrary.new(obFMU_path + "library.csv")
+
     result_hashes = obXML_builder(model, userLib, xml_path, all_args)
     coSimXML_builder(model, xml_path)
 
@@ -1077,6 +1082,9 @@ def set_schedule_for_people(model, space_name, csv_file, userLib, all_args)
 
     runner.registerInfo("Occupancy schedule updated.")
     # report final condition of model
+
+
+
     runner.registerFinalCondition("End.")
 
     return true
