@@ -33,7 +33,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     ############################################################################
 
     # Read user pre-defined library
-    root_path = File.dirname(__FILE__) + '/'
+    root_path = File.dirname(__FILE__) + '/resources/'
     # Load reauired class and gem files
     load root_path + 'UserLibrary.rb'
     userLib = UserLibrary.new(root_path + "library.csv")
@@ -60,6 +60,7 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
     other_space_type_chs << "Lobby"
     other_space_type_chs << "Corridor"
     other_space_type_chs << "Other"
+    other_space_type_chs << "Plenum"
 
     # v_spaces = Array.new()
     # v_spaces = model.getSpaces
@@ -90,8 +91,10 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
         space_type_chs = office_space_type_chs
       elsif v_conference_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = meeting_space_type_chs
-      else
+      elsif v_other_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = other_space_type_chs
+      # else
+      #   space_type_chs = other_space_type_chs
       end
 
       v_current_spaces = space_type.spaces
@@ -1002,18 +1005,25 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     model_temp_measure_path = File.expand_path("../../..", model_temp_run_path) + '/resources/measures/OccSim_integration/'
     model_temp_resources_path =File.expand_path("../../..", model_temp_run_path) + '/resources/'
 
-    runner.registerInfo("The current directory is '#{model_temp_run_path}'")
-    obFMU_path = File.dirname(__FILE__) + '/'
+    runner.registerInfo("The temp run directory is '#{model_temp_run_path}'")
+    obFMU_path = File.dirname(__FILE__) + '/resources/'
+    runner.registerInfo("obFMU_path is '#{obFMU_path}'")
+
+    runner.registerInfo("The temp measure directory is '#{model_temp_measure_path}'")
+    runner.registerInfo("The temp resources directory is '#{model_temp_resources_path}'")
 
     # Load reauired class
-    # Copy the user-defined library to the temp measure folder to enable the measure in the run tab
-    FileUtils.cp(obFMU_path + 'UserLibrary.rb', model_temp_measure_path)
-    FileUtils.cp(obFMU_path + 'library.csv', model_temp_measure_path)
-    load model_temp_measure_path + 'UserLibrary.rb'
-    userLib = UserLibrary.new(model_temp_measure_path + "library.csv")
+    if File.directory?(model_temp_measure_path + 'resources')
+      load model_temp_measure_path + 'resources/UserLibrary.rb'
+      userLib = UserLibrary.new(model_temp_measure_path + "resources/library.csv")
+    else
+      load obFMU_path + 'UserLibrary.rb'
+      userLib = UserLibrary.new(obFMU_path + "library.csv")
+    end
 
     # ### Get user input for whether to use default assumptions by space types
     v_space_types = model.getSpaceTypes
+
 
     ### Get user selected occupancy assumptions for each space
     i = 1
@@ -1053,11 +1063,13 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     # Move the file to the temp folder
     external_csv_path_old = output_file_name + '_IDF.csv'
     external_csv_path_new = model_temp_resources_path + external_csv_path_old.split('/')[-1]
+
+
+    runner.registerInfo("The old output occ sch file is at '#{external_csv_path_old}'")
+    runner.registerInfo("We want to move it to '#{model_temp_resources_path}'")
+
+    # Important, copy the output csv from the obFMU path
     FileUtils.cp(output_file_name + '_IDF.csv', model_temp_resources_path)
-
-    puts external_csv_path_old
-    puts external_csv_path_new
-
 
     runner.registerInfo("Occupancy schedule files copied to the temporary folder: #{model_temp_run_path}.")
 
