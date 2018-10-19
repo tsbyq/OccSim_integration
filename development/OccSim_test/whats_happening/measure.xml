@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>whats_happening</name>
   <uid>fbad443b-7a90-4c63-aa97-8720be6fef24</uid>
-  <version_id>41a27bde-c008-44e5-a876-a3a4b294c6c8</version_id>
-  <version_modified>20181015T201229Z</version_modified>
+  <version_id>d8739bf0-211a-405a-be6e-067e0586659f</version_id>
+  <version_modified>20181017T184722Z</version_modified>
   <xml_checksum>D1F10311</xml_checksum>
   <class_name>WhatsHappening</class_name>
   <display_name>WhatsHappening</display_name>

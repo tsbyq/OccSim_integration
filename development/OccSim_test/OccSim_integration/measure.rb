@@ -73,14 +73,33 @@ class OccSim_integration < OpenStudio::Measure::ModelMeasure
       'WholeBuilding - Lg Office',
       'Office',
       'ClosedOffice',
-      'OpenOffice'
+      'OpenOffice',
+      'SmallOffice - ClosedOffice',
+      'SmallOffice - OpenOffice'
     ]
     # Standard space types for meeting rooms
-    v_conference_space_types = ['Conference']
+    v_conference_space_types = [
+      'Conference',
+      'SmallOffice - Conference',
+    ]
     # Standard space types for auxiliary rooms
-    v_auxiliary_space_types = ['OfficeLarge Data Center',
-                               'OfficeLarge Main Data Center']
-    v_other_space_types = ['Office Attic', 'Attic', 'Plenum Space Type', '']
+    v_auxiliary_space_types = [
+      'OfficeLarge Data Center',
+      'OfficeLarge Main Data Center',
+      'SmallOffice - Elec/MechRoom',
+    ]
+    v_other_space_types = [
+      'Office Attic', 
+      'Attic', 
+      'Plenum Space Type',
+      'SmallOffice - Corridor',
+      'SmallOffice - Lobby',
+      'SmallOffice - Attic',
+      'SmallOffice - Restroom',
+      'SmallOffice - Stair',
+      'SmallOffice - Storage',
+      ''
+    ]
 
     i = 1
     # Loop through all space types, group spaces by their types
@@ -322,32 +341,27 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       'WholeBuilding - Lg Office',
       'Office',
       'ClosedOffice',
-      'OpenOffice'
+      'OpenOffice',
+      'SmallOffice - ClosedOffice',
+      'SmallOffice - OpenOffice'
     ]
 
     # Consider the space to be a conference space is the type is in the list
-    v_conference_space_types = ['Conference']
+    v_conference_space_types = [
+      'Conference',
+      'SmallOffice - Conference',
+      'MediumOffice - Conference'
+    ]
 
     # Loop through all space types
     v_space_types.each do |space_type|
       # puts space_type.standardsSpaceType.to_s
-
       if v_office_space_types.include? space_type.standardsSpaceType.to_s
-        # Do something when the space type is office
-        v_officeSpaces = space_type.spaces
-        v_officeSpaces.each do |officeSpace|
-
-          # puts officeSpace.name.to_s
-          # puts 'Occupancy density of the current space is: ' + space_rules[space_type_selected]['OccupancyDensity'].to_s
-
-          space_type_selected = flag_space_occ_choice[officeSpace.name.to_s]
-          v_officeAreas << officeSpace.floorArea
-          v_nOccOffice << officeSpace.floorArea * space_rules[space_type_selected]['OccupancyDensity']
-        end
-
+        # Add the corresponding office spaces to the array
+        v_officeSpaces += space_type.spaces
       elsif v_conference_space_types.include? space_type.standardsSpaceType.to_s
-        # Do something when the space type is conference room
-        v_meetingSpaces = space_type.spaces
+        # Add the corresponding conference spaces to the array
+        v_meetingSpaces += space_type.spaces
       end
     end
 
@@ -923,6 +937,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     n_occ_hash = all_args[2]
     space_type_selected = occ_type_arg_vals[space_name]
 
+    # puts space_name
 
     # Only office and meeting spaces have space rules for now
     if not space_rules[space_type_selected].nil?
@@ -1093,6 +1108,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     model.getPeopleDefinitions.each do |os_people_def|
       os_people_def.remove
     end
+
+    puts all_args[2]
 
     # Add schedule:file to model
     model.getSpaces.each do |space|

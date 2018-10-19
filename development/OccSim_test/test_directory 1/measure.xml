@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>test_directory</name>
   <uid>ff2cc18c-9319-463b-8082-1f5735dc6e90</uid>
-  <version_id>8553252e-1c48-46ee-b5ad-4daef133eb04</version_id>
-  <version_modified>20181015T201229Z</version_modified>
+  <version_id>5df712f6-e143-4f15-8bc8-b9de83218b96</version_id>
+  <version_modified>20181017T184722Z</version_modified>
   <xml_checksum>D1F10311</xml_checksum>
   <class_name>TestDirectory</class_name>
   <display_name>Test_Directory</display_name>
