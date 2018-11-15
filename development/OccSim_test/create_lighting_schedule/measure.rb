@@ -120,18 +120,87 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
       end
     end
 
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-    puts args[0].class
-    puts args[0]
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
-    # # the name of the space to add to the model
-    # space_name = OpenStudio::Measure::OSArgument.makeStringArgument('space_name', true)
-    # space_name.setDisplayName('New space name')
-    # space_name.setDescription('This name will be used as the name of the new space.')
-    # args << space_name
-
     return args
+  end
+
+  def add_light(model, space, schedule)
+    # This function creates and adds OS:Light and OS:Light:Definition objects to a space
+    space_name = space.name.to_s
+    # New light definition
+    new_light_def = OpenStudio::Model::LightsDefinition.new(model)
+    new_light_def.setDesignLevelCalculationMethod('Watts/Area', 1, 1)
+    new_light_def.setName(space_name + ' light definition')
+    new_light_def.setWattsperSpaceFloorArea(9.68751937503875) # Provide default value, allow users to override
+    new_light_def.setFractionRadiant(0.7)
+    new_light_def.setFractionVisible(0.2)
+  
+    # New light
+    new_light = OpenStudio::Model::Lights.new(new_light_def)
+    new_light.setName(space_name + ' light')
+    new_light.setSpace(space)
+    new_light.setSchedule(schedule)
+  
+    return model
+  end
+
+  def create_lighting_sch_from_occupancy_count(space_name, v_timestamps, v_occ_n_count, delay=15)
+    # This function creates a lighitng schedule based on the occupant count schedule
+    # Delay is in minutes
+    # Note: Be careful of the timestep format when updating the function
+    v_temp = Array.new
+    flag_check = false
+    timestamp_leaving = nil
+    v_occ_n_count.each_with_index do |value_timestamp, i|
+      timestamp_current = DateTime.parse(v_timestamps[i])
+      v_temp[i] = 0
+      if v_occ_n_count[i].to_f > 0
+        v_temp[i] = 1
+      end
+      # Find the timestamp where occupant count starts to be 0
+      if(v_occ_n_count[i].to_f == 0 && v_occ_n_count[i-1].to_f > 0)
+        # puts 'start counting... index is: ' + i.to_s 
+        timestamp_leaving = DateTime.parse(v_timestamps[i])
+        flag_check = true
+      end
+      # Set the valur of the lighting schedule depending on the delay
+      if flag_check
+        # puts 'current: ' + timestamp_current.to_s
+        # puts 'counting: ' + timestamp_leaving.to_s
+        if (timestamp_current - timestamp_leaving) < (delay * 1.0/1440.0)
+          flag_check = true
+          v_temp[i] = 1
+        else
+          flag_check = false
+          v_temp[i] = 0
+        end
+      end
+    end
+    return [space_name] + v_temp
+  end
+
+  def vcols_to_csv(v_cols, file_name='sch_light.csv')
+    # This function write an array of columns(arrays) into a CSV.
+    # The first element of each column array is treated as the header of that column
+    # Note: the column arrays in the v_cols should have the same length
+    nrows = v_cols[0].length
+    CSV.open(file_name, 'wb') do |csv|
+      0.upto(nrows-1) do |row|
+        v_row = Array.new()
+        v_cols.each do |v_col|
+          v_row << v_col[row] 
+        end
+        csv << v_row
+      end
+    end
+  end
+
+  def get_os_schedule_from_csv(model, file_name, col, skip_row=0)
+    # This function creates an OS:Schedule:File from a CSV at specified position
+    file_name = File.realpath(file_name)
+    external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
+    external_file = external_file.get
+    schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
+    return schedule_file
   end
 
   # define what happens when the measure is run
@@ -143,18 +212,95 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
       return false
     end
 
-    ### Get user selected occupancy assumptions for each space
+
+    ### get file directories
+    model_temp_run_path = Dir.pwd + '/'
+    model_temp_resources_path =File.expand_path("../../..", model_temp_run_path) + '/resources/' # where the occupancy schedule will be saved
+
+    ### Get user selected lighting space assumptions for each space
+    v_space_types = model.getSpaceTypes
     i = 1
-    occ_type_arg_vals = {}
+    lght_space_type_arg_vals = {}
     # Loop through all space types, group spaces by their types
     v_space_types.each do |space_type|
       # Loop through all spaces of current space type
       v_current_spaces = space_type.spaces
       next if not v_current_spaces.size > 0
       v_current_spaces.each do |current_space|
-        occ_type_val = runner.getStringArgumentValue("Space_#{i}_" + current_space.nameString, user_arguments)
-        occ_type_arg_vals[current_space.nameString] = occ_type_val
+        lght_space_type_val = runner.getStringArgumentValue("Space_#{i}_" + current_space.nameString, user_arguments)
+        lght_space_type_arg_vals[current_space.nameString] = lght_space_type_val
         i += 1
+      end
+    end
+
+    puts lght_space_type_arg_vals
+
+
+    ### Start creating new lighting schedules based on occupancy schedule
+
+    csv_file = model_temp_resources_path + 'OccSimulator_out_IDF.csv' # ! Need to update this CSV filename if it's changed in the occupancy simulator
+
+    # Get the spaces with occupancy count schedule available
+    v_spaces_occ_sch = File.readlines(csv_file)[3].split(',') # Room ID is saved in 4th row of the occ_sch file 
+    v_headers = Array.new
+    v_spaces_occ_sch.each do |space_occ_sch|
+      if (!['Room ID', 'S0_Outdoor', 'Outside building'].include? space_occ_sch and !space_occ_sch.strip.empty?)
+          v_headers << space_occ_sch
+      end
+    end
+    v_headers = ["Time"] + v_headers
+
+    puts v_headers
+
+    # Read the occupant count schedule file and clean it
+    clean_csv = File.readlines(csv_file).drop(6).join
+    csv_table_sch = CSV.parse(clean_csv, headers:true)
+    new_csv_table = csv_table_sch.by_col!.delete_if do |column_name, column_values|
+      !v_headers.include? column_name
+    end
+
+    # Create lighting schedule based on the occupant count schedule
+    v_cols = Array.new
+    v_ts = new_csv_table.by_col!['Time']
+    v_headers.each do |header|
+      if header != 'Time'
+        # space_name = header.partition('_').last
+        space_name = header
+        # puts space_name
+        v_occ_n = new_csv_table.by_col![space_name]
+        v_light = create_lighting_sch_from_occupancy_count(space_name, v_ts, v_occ_n, 15)
+        v_cols << v_light
+      end
+    end
+
+    # Write new lighting schedule file to CSV
+    file_name_light_sch = 'sch_light.csv'
+    vcols_to_csv(v_cols)
+    # Important: copy the output csv from the temp run path, so that the external file object can find the file during run
+    FileUtils.cp(model_temp_run_path + file_name_light_sch, model_temp_resources_path)
+
+
+    # Add new lighting schedule from the CSV file created
+
+    # Remove all people object (if exist) in the old model
+    model.getLightss.each do |os_light|
+      os_light.remove
+    end
+
+    model.getLightsDefinitions.each do |os_light_def|
+      os_light_def.remove
+    end
+
+    v_spaces = model.getSpaces
+    v_spaces.each do |space|
+      # puts space.name.to_s
+      v_headers.each_with_index do |s_space_name, i|
+        if s_space_name.partition('_').last == space.name.to_s
+          col = i
+          scheduleFile = get_os_schedule_from_csv(model, model_temp_run_path + file_name_light_sch, col, skip_row=1)
+          puts scheduleFile
+          model = add_light(model, space, scheduleFile)
+        end
       end
     end
 
@@ -163,8 +309,6 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     runner.registerInitialCondition("The building started with #{model.getSpaces.size} spaces.")
 
 
-    # echo the new space's name back to the user
-    # runner.registerInfo("Space #{new_space.name} was added.")
 
     # report final condition of model
     runner.registerFinalCondition("The building finished with #{model.getSpaces.size} spaces.")

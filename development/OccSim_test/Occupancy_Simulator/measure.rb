@@ -1011,13 +1011,13 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-    puts user_arguments
+
     # report initial condition of model
     runner.registerInitialCondition("Start.")
 
     # get current file directory
     model_temp_run_path = Dir.pwd + '/'
-    model_temp_measure_path = File.expand_path("../../..", model_temp_run_path) + '/resources/measures/OccSim_integration/'
+    model_temp_measure_path = File.expand_path("../../..", model_temp_run_path) + '/resources/measures/Occupancy_Simulator/'
     model_temp_resources_path =File.expand_path("../../..", model_temp_run_path) + '/resources/'
 
     runner.registerInfo("The temp run directory is '#{model_temp_run_path}'")
