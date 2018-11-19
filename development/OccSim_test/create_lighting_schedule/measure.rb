@@ -194,12 +194,13 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     end
   end
 
-  def get_os_schedule_from_csv(model, file_name, col, skip_row=0)
+  def get_os_schedule_from_csv(model, file_name, schedule_name, col, skip_row=0)
     # This function creates an OS:Schedule:File from a CSV at specified position
     file_name = File.realpath(file_name)
     external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
     external_file = external_file.get
     schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
+    schedule_file.setName(schedule_name)
     return schedule_file
   end
 
@@ -212,6 +213,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
       return false
     end
 
+    runner.registerInfo("Start to create lighting measure from occupant schedule")
 
     ### get file directories
     model_temp_run_path = Dir.pwd + '/'
@@ -252,12 +254,18 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
 
     puts v_headers
 
+    # report initial condition of model
+    runner.registerInitialCondition("The building has #{v_headers.length-1} spaces with available occupant schedule file.")
+
     # Read the occupant count schedule file and clean it
     clean_csv = File.readlines(csv_file).drop(6).join
     csv_table_sch = CSV.parse(clean_csv, headers:true)
     new_csv_table = csv_table_sch.by_col!.delete_if do |column_name, column_values|
       !v_headers.include? column_name
     end
+
+    runner.registerInfo("Successfully read occupant count schedule from CSV file.")
+    runner.registerInfo("Creating new lighting schedules...")
 
     # Create lighting schedule based on the occupant count schedule
     v_cols = Array.new
@@ -273,6 +281,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
       end
     end
 
+    runner.registerInfo("Writing new lighting schedules to CSV file.")
     # Write new lighting schedule file to CSV
     file_name_light_sch = 'sch_light.csv'
     vcols_to_csv(v_cols)
@@ -281,6 +290,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
 
 
     # Add new lighting schedule from the CSV file created
+    runner.registerInfo("Adding new OS:Schedule:File objects to the model....")
 
     # Remove all people object (if exist) in the old model
     model.getLightss.each do |os_light|
@@ -297,7 +307,9 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
       v_headers.each_with_index do |s_space_name, i|
         if s_space_name.partition('_').last == space.name.to_s
           col = i
-          scheduleFile = get_os_schedule_from_csv(model, model_temp_run_path + file_name_light_sch, col, skip_row=1)
+          temp_file_path = model_temp_run_path + file_name_light_sch
+          sch_file_name = space.name.to_s + ' lght sch'
+          scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
           puts scheduleFile
           model = add_light(model, space, scheduleFile)
         end
@@ -305,13 +317,8 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     end
 
 
-    # report initial condition of model
-    runner.registerInitialCondition("The building started with #{model.getSpaces.size} spaces.")
-
-
-
     # report final condition of model
-    runner.registerFinalCondition("The building finished with #{model.getSpaces.size} spaces.")
+    runner.registerFinalCondition("Finished creating and adding new lighting schedules for #{v_headers.length-1} spaces.")
 
     return true
   end

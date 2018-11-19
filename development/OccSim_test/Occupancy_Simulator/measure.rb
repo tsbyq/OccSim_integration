@@ -920,13 +920,14 @@ def obXML_builder(osModel, userLib, outPath, all_args)
   end
 
 
-  def get_os_schedule_from_csv(file_name, model, col, skip_row)
+  def get_os_schedule_from_csv(file_name, model, schedule_name, col, skip_row)
     file_name = File.realpath(file_name)
     external_file = OpenStudio::Model::ExternalFile::getExternalFile(model, file_name)
     external_file = external_file.get
     schedule_file = OpenStudio::Model::ScheduleFile.new(external_file, col, skip_row)
     # schedule_type_limit = OpenStudio::Model::ScheduleTypeLimits .new(model)
     # schedule_file.setScheduleTypeLimits(schedule_type_limit)
+    schedule_file.setName(schedule_name)
     return schedule_file
   end
 
@@ -984,7 +985,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       # Map the schedule to space
       # Get the column number in the output schedule file by space name
       col_number = space_ID_map[space_name] + 2 # Skip col 1: step and col 2: time
-      people_sch = get_os_schedule_from_csv(csv_file, model, col = col_number, skip_row = 7)
+      sch_file_name = space_name + ' occ sch'
+      people_sch = get_os_schedule_from_csv(csv_file, model, sch_file_name, col_number, skip_row = 7)
       # Set minute per item (timestep = 10min) May need to change !!!
       people_sch.setMinutesperItem('10')
 
@@ -1076,15 +1078,14 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     system(obFMU_path + 'obFMU.exe', xml_file_name, output_file_name, co_sim_file_name)
     runner.registerInfo("Occupancy schedule simulation successfully completed.")
     # Move the file to the temp folder
-    external_csv_path_old = output_file_name + '_IDF.csv'
-    external_csv_path_new = model_temp_resources_path + external_csv_path_old.split('/')[-1]
+    external_csv_path = output_file_name + '_IDF.csv'
 
 
-    runner.registerInfo("The old output occ sch file is at '#{external_csv_path_old}'")
+    runner.registerInfo("The old output occ sch file is at '#{external_csv_path}'")
     runner.registerInfo("We want to move it to '#{model_temp_resources_path}'")
 
     # Important, copy the output csv from the obFMU path
-    FileUtils.cp(output_file_name + '_IDF.csv', model_temp_resources_path)
+    # FileUtils.cp(output_file_name + '_IDF.csv', model_temp_resources_path) # No longer need this with OS V2.7.1 or later
 
     runner.registerInfo("Occupancy schedule files copied to the temporary folder: #{model_temp_run_path}.")
 
@@ -1113,7 +1114,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
     # Add schedule:file to model
     model.getSpaces.each do |space|
-      model = set_schedule_for_people(model, space.name.to_s, external_csv_path_new, userLib, all_args)
+      model = set_schedule_for_people(model, space.name.to_s, external_csv_path, userLib, all_args)
     end
 
     runner.registerInfo("Occupancy schedule updated.")
