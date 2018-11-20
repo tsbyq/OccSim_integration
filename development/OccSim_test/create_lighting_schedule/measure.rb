@@ -240,7 +240,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
 
     ### Start creating new lighting schedules based on occupancy schedule
 
-    csv_file = model_temp_resources_path + 'OccSimulator_out_IDF.csv' # ! Need to update this CSV filename if it's changed in the occupancy simulator
+    csv_file = model_temp_resources_path + '/files/OccSimulator_out_IDF.csv' # ! Need to update this CSV filename if it's changed in the occupancy simulator
 
     # Get the spaces with occupancy count schedule available
     v_spaces_occ_sch = File.readlines(csv_file)[3].split(',') # Room ID is saved in 4th row of the occ_sch file 
