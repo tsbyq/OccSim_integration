@@ -3,13 +3,12 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
-# require 'C:/openstudio-2.7.0/Ruby/openstudio.rb'
 # start the measure
-class CreateMELsSchedule < OpenStudio::Measure::ModelMeasure
+class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
   # human readable name
   def name
     # Measure name should be the title case of the class name.
-    return 'Create MELs Schedule'
+    return 'Create MELs Schedule from Occupant Count'
   end
 
   # human readable description
@@ -131,8 +130,8 @@ class CreateMELsSchedule < OpenStudio::Measure::ModelMeasure
     new_equip_def.setDesignLevelCalculationMethod('Watts/Area', 1, 1)
     new_equip_def.setName(space_name + ' electric equipment definition')
     new_equip_def.setWattsperSpaceFloorArea(9.68751937503875) # !!! Need to calculate based on the max number of occupant of the space.
-    new_equip_def.setFractionRadiant(0.7)
-    new_equip_def.setFractionVisible(0.2)
+    # new_equip_def.setFractionRadiant(0.7)
+    # new_equip_def.setFractionVisible(0.2)
   
     # New electric equipment
     new_equip = OpenStudio::Model::ElectricEquipment.new(new_equip_def)
@@ -222,25 +221,25 @@ class CreateMELsSchedule < OpenStudio::Measure::ModelMeasure
     ### Get user selected electrical equipment space assumptions for each space
     v_space_types = model.getSpaceTypes
     i = 1
-    lght_space_type_arg_vals = {}
+    equip_space_type_arg_vals = {}
     # Loop through all space types, group spaces by their types
     v_space_types.each do |space_type|
       # Loop through all spaces of current space type
       v_current_spaces = space_type.spaces
       next if not v_current_spaces.size > 0
       v_current_spaces.each do |current_space|
-        lght_space_type_val = runner.getStringArgumentValue("Space_#{i}_" + current_space.nameString, user_arguments)
-        lght_space_type_arg_vals[current_space.nameString] = lght_space_type_val
+        equip_space_type_val = runner.getStringArgumentValue("Space_#{i}_" + current_space.nameString, user_arguments)
+        equip_space_type_arg_vals[current_space.nameString] = equip_space_type_val
         i += 1
       end
     end
 
-    puts lght_space_type_arg_vals
+    puts equip_space_type_arg_vals
 
 
     ### Start creating new electrical equipment schedules based on occupancy schedule
 
-    csv_file = model_temp_resources_path + 'OccSimulator_out_IDF.csv' # ! Need to update this CSV filename if it's changed in the occupancy simulator
+    csv_file = model_temp_resources_path + 'files/OccSimulator_out_IDF.csv' # ! Need to update this CSV filename if it's changed in the occupancy simulator
 
     # Get the spaces with occupancy count schedule available
     v_spaces_occ_sch = File.readlines(csv_file)[3].split(',') # Room ID is saved in 4th row of the occ_sch file 
@@ -308,7 +307,7 @@ class CreateMELsSchedule < OpenStudio::Measure::ModelMeasure
         if s_space_name.partition('_').last == space.name.to_s
           col = i
           temp_file_path = model_temp_run_path + file_name_equip_sch
-          sch_file_name = space.name.to_s + ' lght sch'
+          sch_file_name = space.name.to_s + ' equip sch'
           scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
           puts scheduleFile
           model = add_equip(model, space, scheduleFile)
@@ -325,4 +324,4 @@ class CreateMELsSchedule < OpenStudio::Measure::ModelMeasure
 end
 
 # register the measure to be used by the application
-CreateMELsSchedule.new.registerWithApplication
+CreateMELsScheduleFromOccupantCount.new.registerWithApplication
