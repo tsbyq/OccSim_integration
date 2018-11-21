@@ -5,6 +5,12 @@
 
 # start the measure
 class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
+  # instance variables
+  
+  # The variables are used for the linear relation between people count and MELs
+  @@a = 80.0     # MELs baseload: 80 W/max_person
+  @@b = 180.0    # MELs dynamic load: 180 W/person
+
   # human readable name
   def name
     # Measure name should be the title case of the class name.
@@ -123,13 +129,13 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
   end
 
   def add_equip(model, space, schedule)
-    # This function creates and adds OS:Light and OS:Light:Definition objects to a space
+    # This function creates and adds OS:equip and OS:equip:Definition objects to a space
     space_name = space.name.to_s
-    # New light definition
+    # New equip definition
     new_equip_def = OpenStudio::Model::ElectricEquipmentDefinition.new(model)
-    new_equip_def.setDesignLevelCalculationMethod('Watts/Area', 1, 1)
-    new_equip_def.setName(space_name + ' electric equipment definition')
-    new_equip_def.setWattsperSpaceFloorArea(9.68751937503875) # !!! Need to calculate based on the max number of occupant of the space.
+    new_equip_def.setDesignLevelCalculationMethod('Watts/Person', 1, 1)
+    new_equip_def.setName(space_name + ' electric equipmendefinition')
+    new_equip_def.setWattsperPerson(@@a + @@b) # !!! 
     # new_equip_def.setFractionRadiant(0.7)
     # new_equip_def.setFractionVisible(0.2)
   
@@ -142,37 +148,14 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     return model
   end
 
-  def create_equip_sch_from_occupant_count(space_name, v_timestamps, v_occ_n_count, delay=15)
+  def create_equip_sch_from_occupant_count(space_name, v_occ_n_count)
     # This function creates a electric equipment schedule based on the occupant count schedule
     # Delay is in minutes
     # Note: Be careful of the timestep format when updating the function
     v_temp = Array.new
-    flag_check = false
-    timestamp_leaving = nil
     v_occ_n_count.each_with_index do |value_timestamp, i|
-      timestamp_current = DateTime.parse(v_timestamps[i])
-      v_temp[i] = 0
-      if v_occ_n_count[i].to_f > 0
-        v_temp[i] = 1
-      end
-      # Find the timestamp where occupant count starts to be 0
-      if(v_occ_n_count[i].to_f == 0 && v_occ_n_count[i-1].to_f > 0)
-        # puts 'start counting... index is: ' + i.to_s 
-        timestamp_leaving = DateTime.parse(v_timestamps[i])
-        flag_check = true
-      end
-      # Set the valur of the electrical equipment schedule depending on the delay
-      if flag_check
-        # puts 'current: ' + timestamp_current.to_s
-        # puts 'counting: ' + timestamp_leaving.to_s
-        if (timestamp_current - timestamp_leaving) < (delay * 1.0/1440.0)
-          flag_check = true
-          v_temp[i] = 1
-        else
-          flag_check = false
-          v_temp[i] = 0
-        end
-      end
+      # puts b * value_timestamp.to_f
+      v_temp[i] = (@@a + @@b * value_timestamp.to_f) / (@@a + @@b)
     end
     return [space_name] + v_temp
   end
@@ -268,14 +251,13 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
 
     # Create electrical equipment schedule based on the occupant count schedule
     v_cols = Array.new
-    v_ts = new_csv_table.by_col!['Time']
     v_headers.each do |header|
       if header != 'Time'
         # space_name = header.partition('_').last
         space_name = header
         # puts space_name
         v_occ_n = new_csv_table.by_col![space_name]
-        v_equip = create_equip_sch_from_occupant_count(space_name, v_ts, v_occ_n, 15)
+        v_equip = create_equip_sch_from_occupant_count(space_name, v_occ_n)
         v_cols << v_equip
       end
     end
@@ -310,6 +292,7 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
           sch_file_name = space.name.to_s + ' equip sch'
           scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
           puts scheduleFile
+          scheduleFile.setMinutesperItem('10')
           model = add_equip(model, space, scheduleFile)
         end
       end

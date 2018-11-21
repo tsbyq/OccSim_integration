@@ -130,7 +130,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     new_light_def = OpenStudio::Model::LightsDefinition.new(model)
     new_light_def.setDesignLevelCalculationMethod('Watts/Area', 1, 1)
     new_light_def.setName(space_name + ' light definition')
-    new_light_def.setWattsperSpaceFloorArea(9.68751937503875) # Provide default value, allow users to override
+    new_light_def.setWattsperSpaceFloorArea(8.5) # Provide default value, allow users to override
     new_light_def.setFractionRadiant(0.7)
     new_light_def.setFractionVisible(0.2)
   
@@ -310,6 +310,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
           temp_file_path = model_temp_run_path + file_name_light_sch
           sch_file_name = space.name.to_s + ' lght sch'
           scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
+          scheduleFile.setMinutesperItem('10')
           puts scheduleFile
           model = add_light(model, space, scheduleFile)
         end
