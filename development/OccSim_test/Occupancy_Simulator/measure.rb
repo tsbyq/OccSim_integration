@@ -178,9 +178,13 @@ class OccupancySimulator < OpenStudio::Measure::ModelMeasure
   # @return [Boolean] if the string can be parsed to date
   def isValidDate(dateStr)
     begin
-      return (Date.parse(dateStr).class.to_s == "Date")
+      return (Date.parse(dateStr).class.to_s == "Date"), Date.parse(dateStr).to_s
     rescue
-      return false
+      begin
+          return (Date.strptime(dateStr, "%m/%d/%Y").class.to_s == "Date"), Date.strptime(dateStr, "%m/%d/%Y").to_s
+      rescue
+          return false, nil
+      end
     end
   end
 
@@ -850,10 +854,12 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     # Holidays
     f.puts('<Holidays>')
     v_holidays.each do |hDate|
-      if (isValidDate(hDate))
+      valid_date = false
+      valid_date, date_str = isValidDate(hDate)
+      if (valid_date)
         ## Holiday
         f.puts('<Holiday>')
-        f.puts('<Date>' + hDate + '</Date>')
+        f.puts('<Date>' + date_str + '</Date>')
         f.puts('</Holiday>')
         ## --Holiday
       end
