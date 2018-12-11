@@ -6,6 +6,12 @@
 # require 'C:/openstudio-2.7.0/Ruby/openstudio.rb'
 # start the measure
 class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
+
+  # instance variables
+  @@LPD = 8.5     # Default lighting power density: 8.5 W/m2
+  @@F_rad = 0.7   # Default radiation fraction: 0.7
+  @@F_vis = 8.2   # Default visible fraction: 0.2
+
   # human readable name
   def name
     # Measure name should be the title case of the class name.
@@ -130,9 +136,9 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     new_light_def = OpenStudio::Model::LightsDefinition.new(model)
     new_light_def.setDesignLevelCalculationMethod('Watts/Area', 1, 1)
     new_light_def.setName(space_name + ' light definition')
-    new_light_def.setWattsperSpaceFloorArea(8.5) # Provide default value, allow users to override
-    new_light_def.setFractionRadiant(0.7)
-    new_light_def.setFractionVisible(0.2)
+    new_light_def.setWattsperSpaceFloorArea(@@LPD) # Provide default value, allow users to override
+    new_light_def.setFractionRadiant(@@F_rad)
+    new_light_def.setFractionVisible(@@F_vis)
   
     # New light
     new_light = OpenStudio::Model::Lights.new(new_light_def)

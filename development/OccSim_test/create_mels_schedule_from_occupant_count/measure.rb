@@ -8,8 +8,8 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
   # instance variables
   
   # The variables are used for the linear relation between people count and MELs
-  @@a = 80.0     # MELs baseload: 80 W/max_person
-  @@b = 180.0    # MELs dynamic load: 180 W/person
+  @@a = 60.0     # MELs baseload: 60 W/max_person
+  @@b = 140.0    # MELs dynamic load: 140 W/person
 
   # human readable name
   def name
