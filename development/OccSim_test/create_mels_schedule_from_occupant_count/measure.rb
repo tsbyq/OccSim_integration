@@ -5,11 +5,59 @@
 
 # start the measure
 class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
-  # instance variables
-  
+  # Class variables
+
   # The variables are used for the linear relation between people count and MELs
-  @@a = 60.0     # MELs baseload: 60 W/max_person
-  @@b = 140.0    # MELs dynamic load: 140 W/person
+  @@a_office = 60.0     # MELs baseload: 60 W/max_person
+  @@b_office = 140.0    # MELs dynamic load: 140 W/person
+
+  @@a_conference = 20.0     # MELs baseload: 20 W/max_person
+  @@b_conference = 140.0    # MELs dynamic load: 140 W/person
+
+  # Standard space types for office rooms
+  @@v_office_space_types = [
+    'WholeBuilding - Sm Office',
+    'WholeBuilding - Md Office',
+    'WholeBuilding - Lg Office',
+    'Office',
+    'ClosedOffice',
+    'OpenOffice',
+    'SmallOffice - ClosedOffice',
+    'SmallOffice - OpenOffice'
+  ]
+  # Standard space types for meeting rooms
+  @@v_conference_space_types = [
+    'Conference',
+    'SmallOffice - Conference',
+  ]
+  # Standard space types for auxiliary rooms
+  @@v_auxiliary_space_types = [
+    'OfficeLarge Data Center',
+    'OfficeLarge Main Data Center',
+    'SmallOffice - Elec/MechRoom',
+  ]
+  @@v_other_space_types = [
+    'Office Attic',
+    'Attic',
+    'Plenum Space Type',
+    'SmallOffice - Corridor',
+    'SmallOffice - Lobby',
+    'SmallOffice - Attic',
+    'SmallOffice - Restroom',
+    'SmallOffice - Stair',
+    'SmallOffice - Storage',
+    ''
+  ]
+
+  @@office_type_names =[
+    'Open-plan office',
+    'Closed office'
+  ]
+
+  @@conference_room_type_names = [
+    'Conference room',
+    'Conference room example'
+  ]
 
   # human readable name
   def name
@@ -38,10 +86,13 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     meeting_space_type_chs = OpenStudio::StringVector.new
     other_space_type_chs = OpenStudio::StringVector.new
 
-    office_space_type_chs << "Open-plan office"
-    office_space_type_chs << "Closed office"
+    @@office_type_names.each do |office_type_name|
+      office_space_type_chs << office_type_name
+    end
 
-    meeting_space_type_chs << "Conference room"
+    @@conference_room_type_names.each do |conference_room_type_name|
+      meeting_space_type_chs << conference_room_type_name
+    end
 
     other_space_type_chs << "Auxiliary"
     other_space_type_chs << "Lobby"
@@ -53,51 +104,16 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     # v_spaces = model.getSpaces
     v_space_types = model.getSpaceTypes
 
-    # Standard space types for office rooms
-    v_office_space_types = [
-      'WholeBuilding - Sm Office',
-      'WholeBuilding - Md Office',
-      'WholeBuilding - Lg Office',
-      'Office',
-      'ClosedOffice',
-      'OpenOffice',
-      'SmallOffice - ClosedOffice',
-      'SmallOffice - OpenOffice'
-    ]
-    # Standard space types for meeting rooms
-    v_conference_space_types = [
-      'Conference',
-      'SmallOffice - Conference',
-    ]
-    # Standard space types for auxiliary rooms
-    v_auxiliary_space_types = [
-      'OfficeLarge Data Center',
-      'OfficeLarge Main Data Center',
-      'SmallOffice - Elec/MechRoom',
-    ]
-    v_other_space_types = [
-      'Office Attic', 
-      'Attic', 
-      'Plenum Space Type',
-      'SmallOffice - Corridor',
-      'SmallOffice - Lobby',
-      'SmallOffice - Attic',
-      'SmallOffice - Restroom',
-      'SmallOffice - Stair',
-      'SmallOffice - Storage',
-      ''
-    ]
-
     i = 1
     # Loop through all space types, group spaces by their types
     v_space_types.each do |space_type|
       # Loop through all spaces of current space type
       # Puplate the valid options for each space depending on its space type
-      if v_office_space_types.include? space_type.standardsSpaceType.to_s
+      if @@v_office_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = office_space_type_chs
-      elsif v_conference_space_types.include? space_type.standardsSpaceType.to_s
+      elsif @@v_conference_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = meeting_space_type_chs
-      elsif v_other_space_types.include? space_type.standardsSpaceType.to_s
+      elsif @@v_other_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = other_space_type_chs
       # else
       #   space_type_chs = other_space_type_chs
@@ -110,13 +126,13 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
         arg_temp = OpenStudio::Measure::OSArgument::makeChoiceArgument("Space_#{i}_" + current_space.nameString, space_type_chs, true)
         arg_temp.setDisplayName("Space #{i}: " + current_space.nameString)
         # Conditionally set the default choice for the space
-        if(v_office_space_types.include? space_type.standardsSpaceType.to_s)
+        if(@@v_office_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue("Open-plan office")
-        elsif(v_conference_space_types.include? space_type.standardsSpaceType.to_s)
+        elsif(@@v_conference_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue("Conference room")
-        elsif(v_auxiliary_space_types.include? space_type.standardsSpaceType.to_s)
+        elsif(@@v_auxiliary_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue('Auxiliary')
-        elsif(v_other_space_types.include? space_type.standardsSpaceType.to_s)
+        elsif(@@v_other_space_types.include? space_type.standardsSpaceType.to_s)
           # If the space type is not in standard space types
           arg_temp.setDefaultValue('Other')
         end
@@ -130,32 +146,37 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
 
   def add_equip(model, space, schedule)
     # This function creates and adds OS:equip and OS:equip:Definition objects to a space
+
     space_name = space.name.to_s
     # New equip definition
     new_equip_def = OpenStudio::Model::ElectricEquipmentDefinition.new(model)
     new_equip_def.setDesignLevelCalculationMethod('Watts/Person', 1, 1)
     new_equip_def.setName(space_name + ' electric equipmendefinition')
-    new_equip_def.setWattsperPerson(@@a + @@b) # !!! 
+    new_equip_def.setWattsperPerson(@@a_office + @@b_office) # !!!
     # new_equip_def.setFractionRadiant(0.7)
     # new_equip_def.setFractionVisible(0.2)
-  
+
     # New electric equipment
     new_equip = OpenStudio::Model::ElectricEquipment.new(new_equip_def)
     new_equip.setName(space_name + ' electric equipment')
     new_equip.setSpace(space)
     new_equip.setSchedule(schedule)
-  
+
     return model
   end
 
-  def create_equip_sch_from_occupant_count(space_name, v_occ_n_count)
+  def create_equip_sch_from_occupant_count(space_name, space_type, v_occ_n_count)
     # This function creates a electric equipment schedule based on the occupant count schedule
     # Delay is in minutes
     # Note: Be careful of the timestep format when updating the function
     v_temp = Array.new
     v_occ_n_count.each_with_index do |value_timestamp, i|
       # puts b * value_timestamp.to_f
-      v_temp[i] = (@@a + @@b * value_timestamp.to_f) / (@@a + @@b)
+      if @@office_type_names.include? space_type
+        v_temp[i] = (@@a_office + @@b_office * value_timestamp.to_f) / (@@a_office + @@b_office)
+      elsif @@conference_room_type_names.include? space_type
+        v_temp[i] = (@@a_conference + @@b_conference * value_timestamp.to_f) / (@@a_conference + @@b_conference)
+      end
     end
     return [space_name] + v_temp
   end
@@ -169,7 +190,7 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
       0.upto(nrows-1) do |row|
         v_row = Array.new()
         v_cols.each do |v_col|
-          v_row << v_col[row] 
+          v_row << v_col[row]
         end
         csv << v_row
       end
@@ -225,16 +246,18 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     csv_file = model_temp_resources_path + 'files/OccSimulator_out_IDF.csv' # ! Need to update this CSV filename if it's changed in the occupancy simulator
 
     # Get the spaces with occupancy count schedule available
-    v_spaces_occ_sch = File.readlines(csv_file)[3].split(',') # Room ID is saved in 4th row of the occ_sch file 
+    v_spaces_occ_sch = File.readlines(csv_file)[3].split(',') # Room ID is saved in 4th row of the occ_sch file
     v_headers = Array.new
+    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     v_spaces_occ_sch.each do |space_occ_sch|
       if (!['Room ID', 'S0_Outdoor', 'Outside building'].include? space_occ_sch and !space_occ_sch.strip.empty?)
           v_headers << space_occ_sch
+          puts space_occ_sch
       end
     end
     v_headers = ["Time"] + v_headers
 
-    puts v_headers
+    # puts v_headers
 
     # report initial condition of model
     runner.registerInitialCondition("The building has #{v_headers.length-1} spaces with available occupant schedule file.")
@@ -250,14 +273,14 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     runner.registerInfo("Creating new electrical equipment schedules...")
 
     # Create electrical equipment schedule based on the occupant count schedule
+    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     v_cols = Array.new
     v_headers.each do |header|
       if header != 'Time'
-        # space_name = header.partition('_').last
         space_name = header
-        # puts space_name
+        space_type = equip_space_type_arg_vals[header.partition('_').last]
         v_occ_n = new_csv_table.by_col![space_name]
-        v_equip = create_equip_sch_from_occupant_count(space_name, v_occ_n)
+        v_equip = create_equip_sch_from_occupant_count(space_name, space_type, v_occ_n)
         v_cols << v_equip
       end
     end
@@ -273,7 +296,8 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     # Add new electrical equipment schedule from the CSV file created
     runner.registerInfo("Adding new OS:Schedule:File objects to the model....")
 
-    # Remove all people object (if exist) in the old model
+    # Remove all electric equipment (if exist) in the old model
+    # Need to update this (only remove the old equipment schedule for office and comference rooms)
     model.getElectricEquipments.each do |os_equip|
       os_equip.remove
     end
@@ -291,7 +315,7 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
           temp_file_path = model_temp_run_path + file_name_equip_sch
           sch_file_name = space.name.to_s + ' equip sch'
           scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
-          puts scheduleFile
+          # puts scheduleFile
           scheduleFile.setMinutesperItem('10')
           model = add_equip(model, space, scheduleFile)
         end
