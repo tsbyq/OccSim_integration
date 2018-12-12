@@ -14,6 +14,8 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
   @@a_conference = 20.0     # MELs baseload: 20 W/max_person
   @@b_conference = 140.0    # MELs dynamic load: 140 W/person
 
+  @@minute_per_item = 10    # 10 minutes per simulation step
+
   # Standard space types for office rooms
   @@v_office_space_types = [
     'WholeBuilding - Sm Office',
@@ -100,8 +102,6 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     other_space_type_chs << "Other"
     other_space_type_chs << "Plenum"
 
-    # v_spaces = Array.new()
-    # v_spaces = model.getSpaces
     v_space_types = model.getSpaceTypes
 
     i = 1
@@ -248,11 +248,9 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     # Get the spaces with occupancy count schedule available
     v_spaces_occ_sch = File.readlines(csv_file)[3].split(',') # Room ID is saved in 4th row of the occ_sch file
     v_headers = Array.new
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     v_spaces_occ_sch.each do |space_occ_sch|
       if (!['Room ID', 'S0_Outdoor', 'Outside building'].include? space_occ_sch and !space_occ_sch.strip.empty?)
           v_headers << space_occ_sch
-          puts space_occ_sch
       end
     end
     v_headers = ["Time"] + v_headers
@@ -273,7 +271,6 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     runner.registerInfo("Creating new electrical equipment schedules...")
 
     # Create electrical equipment schedule based on the occupant count schedule
-    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     v_cols = Array.new
     v_headers.each do |header|
       if header != 'Time'
@@ -292,20 +289,44 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
     # Important: copy the output csv from the temp run path, so that the external file object can find the file during run
     FileUtils.cp(model_temp_run_path + file_name_equip_sch, model_temp_resources_path)
 
-
     # Add new electrical equipment schedule from the CSV file created
     runner.registerInfo("Adding new OS:Schedule:File objects to the model....")
 
-    # Remove all electric equipment (if exist) in the old model
-    # Need to update this (only remove the old equipment schedule for office and comference rooms)
-    model.getElectricEquipments.each do |os_equip|
-      os_equip.remove
+    # Only remove the old equipment schedule for office and comference rooms
+    puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
+    runner.registerInfo("Removing old OS:ElectricEquipment and OS:ElectricEquipment:Definition for office and conference rooms.")
+    # Remove old electric equipment definition objects for office and conference rooms
+    v_space_types.each do |space_type|
+      space_type.spaces.each do |space|
+        selected_space_type = equip_space_type_arg_vals[space.name.to_s]
+        if (@@office_type_names.include? selected_space_type) || (@@conference_room_type_names.include? selected_space_type)
+          space_type.electricEquipment.each do |ee|
+            puts 'Remove old electric equipment definition object: ' + ee.electricEquipmentDefinition.name.to_s
+            ee.electricEquipmentDefinition.remove
+          end
+        end 
+      end
     end
 
-    model.getElectricEquipmentDefinitions.each do |os_equip_def|
-      os_equip_def.remove
+
+    # Remove old electric equipment objects for office and conference rooms
+    # Caution: the order of deletion matters
+    v_space_types.each do |space_type|
+      space_type.spaces.each do |space|
+        selected_space_type = equip_space_type_arg_vals[space.name.to_s]
+        if (@@office_type_names.include? selected_space_type) || (@@conference_room_type_names.include? selected_space_type)
+          space_type.electricEquipment.each do |ee|
+            puts 'Remove old electric equipment object ' + ee.name.to_s
+            ee.remove
+          end
+        end 
+      end
     end
 
+
+    runner.registerInfo("Adding new OS:ElectricEquipment and OS:ElectricEquipment:Definition for office and conference rooms.")
+    # Add new schedules
     v_spaces = model.getSpaces
     v_spaces.each do |space|
       # puts space.name.to_s
@@ -316,12 +337,11 @@ class CreateMELsScheduleFromOccupantCount < OpenStudio::Measure::ModelMeasure
           sch_file_name = space.name.to_s + ' equip sch'
           scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
           # puts scheduleFile
-          scheduleFile.setMinutesperItem('10')
+          scheduleFile.setMinutesperItem(@@minute_per_item.to_s)
           model = add_equip(model, space, scheduleFile)
         end
       end
     end
-
 
     # report final condition of model
     runner.registerFinalCondition("Finished creating and adding new electrical equipment schedules for #{v_headers.length-1} spaces.")
