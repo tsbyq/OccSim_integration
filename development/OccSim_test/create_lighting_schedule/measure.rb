@@ -11,6 +11,52 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
   @@LPD = 8.5     # Default lighting power density: 8.5 W/m2
   @@F_rad = 0.7   # Default radiation fraction: 0.7
   @@F_vis = 8.2   # Default visible fraction: 0.2
+  @@minute_per_item = 10    # 10 minutes per simulation step
+
+  # Standard space types for office rooms
+  @@v_office_space_types = [
+    'WholeBuilding - Sm Office',
+    'WholeBuilding - Md Office',
+    'WholeBuilding - Lg Office',
+    'Office',
+    'ClosedOffice',
+    'OpenOffice',
+    'SmallOffice - ClosedOffice',
+    'SmallOffice - OpenOffice'
+  ]
+  # Standard space types for meeting rooms
+  @@v_conference_space_types = [
+    'Conference',
+    'SmallOffice - Conference',
+  ]
+  # Standard space types for auxiliary rooms
+  @@v_auxiliary_space_types = [
+    'OfficeLarge Data Center',
+    'OfficeLarge Main Data Center',
+    'SmallOffice - Elec/MechRoom',
+  ]
+  @@v_other_space_types = [
+    'Office Attic', 
+    'Attic', 
+    'Plenum Space Type',
+    'SmallOffice - Corridor',
+    'SmallOffice - Lobby',
+    'SmallOffice - Attic',
+    'SmallOffice - Restroom',
+    'SmallOffice - Stair',
+    'SmallOffice - Storage',
+    ''
+  ]
+
+  @@office_type_names =[
+    'Open-plan office',
+    'Closed office'
+  ]
+
+  @@conference_room_type_names = [
+    'Conference room',
+    'Conference room example'
+  ]
 
   # human readable name
   def name
@@ -39,10 +85,14 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     meeting_space_type_chs = OpenStudio::StringVector.new
     other_space_type_chs = OpenStudio::StringVector.new
 
-    office_space_type_chs << "Open-plan office"
-    office_space_type_chs << "Closed office"
 
-    meeting_space_type_chs << "Conference room"
+    @@office_type_names.each do |office_type_name|
+      office_space_type_chs << office_type_name
+    end
+
+    @@conference_room_type_names.each do |conference_room_type_name|
+      meeting_space_type_chs << conference_room_type_name
+    end
 
     other_space_type_chs << "Auxiliary"
     other_space_type_chs << "Lobby"
@@ -54,51 +104,16 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     # v_spaces = model.getSpaces
     v_space_types = model.getSpaceTypes
 
-    # Standard space types for office rooms
-    v_office_space_types = [
-      'WholeBuilding - Sm Office',
-      'WholeBuilding - Md Office',
-      'WholeBuilding - Lg Office',
-      'Office',
-      'ClosedOffice',
-      'OpenOffice',
-      'SmallOffice - ClosedOffice',
-      'SmallOffice - OpenOffice'
-    ]
-    # Standard space types for meeting rooms
-    v_conference_space_types = [
-      'Conference',
-      'SmallOffice - Conference',
-    ]
-    # Standard space types for auxiliary rooms
-    v_auxiliary_space_types = [
-      'OfficeLarge Data Center',
-      'OfficeLarge Main Data Center',
-      'SmallOffice - Elec/MechRoom',
-    ]
-    v_other_space_types = [
-      'Office Attic', 
-      'Attic', 
-      'Plenum Space Type',
-      'SmallOffice - Corridor',
-      'SmallOffice - Lobby',
-      'SmallOffice - Attic',
-      'SmallOffice - Restroom',
-      'SmallOffice - Stair',
-      'SmallOffice - Storage',
-      ''
-    ]
-
     i = 1
     # Loop through all space types, group spaces by their types
     v_space_types.each do |space_type|
       # Loop through all spaces of current space type
       # Puplate the valid options for each space depending on its space type
-      if v_office_space_types.include? space_type.standardsSpaceType.to_s
+      if @@v_office_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = office_space_type_chs
-      elsif v_conference_space_types.include? space_type.standardsSpaceType.to_s
+      elsif @@v_conference_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = meeting_space_type_chs
-      elsif v_other_space_types.include? space_type.standardsSpaceType.to_s
+      elsif @@v_other_space_types.include? space_type.standardsSpaceType.to_s
         space_type_chs = other_space_type_chs
       # else
       #   space_type_chs = other_space_type_chs
@@ -111,13 +126,13 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
         arg_temp = OpenStudio::Measure::OSArgument::makeChoiceArgument("Space_#{i}_" + current_space.nameString, space_type_chs, true)
         arg_temp.setDisplayName("Space #{i}: " + current_space.nameString)
         # Conditionally set the default choice for the space
-        if(v_office_space_types.include? space_type.standardsSpaceType.to_s)
+        if(@@v_office_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue("Open-plan office")
-        elsif(v_conference_space_types.include? space_type.standardsSpaceType.to_s)
+        elsif(@@v_conference_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue("Conference room")
-        elsif(v_auxiliary_space_types.include? space_type.standardsSpaceType.to_s)
+        elsif(@@v_auxiliary_space_types.include? space_type.standardsSpaceType.to_s)
           arg_temp.setDefaultValue('Auxiliary')
-        elsif(v_other_space_types.include? space_type.standardsSpaceType.to_s)
+        elsif(@@v_other_space_types.include? space_type.standardsSpaceType.to_s)
           # If the space type is not in standard space types
           arg_temp.setDefaultValue('Other')
         end
@@ -129,16 +144,16 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     return args
   end
 
-  def add_light(model, space, schedule)
+  def add_light(model, space, schedule, lpd=@@LPD, frac_rad=@@F_rad, frac_vis=@@F_vis)
     # This function creates and adds OS:Light and OS:Light:Definition objects to a space
     space_name = space.name.to_s
     # New light definition
     new_light_def = OpenStudio::Model::LightsDefinition.new(model)
     new_light_def.setDesignLevelCalculationMethod('Watts/Area', 1, 1)
     new_light_def.setName(space_name + ' light definition')
-    new_light_def.setWattsperSpaceFloorArea(@@LPD) # Provide default value, allow users to override
-    new_light_def.setFractionRadiant(@@F_rad)
-    new_light_def.setFractionVisible(@@F_vis)
+    new_light_def.setWattsperSpaceFloorArea(lpd) # Provide default value, allow users to override
+    new_light_def.setFractionRadiant(frac_rad)
+    new_light_def.setFractionVisible(frac_vis)
   
     # New light
     new_light = OpenStudio::Model::Lights.new(new_light_def)
@@ -298,13 +313,32 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
     # Add new lighting schedule from the CSV file created
     runner.registerInfo("Adding new OS:Schedule:File objects to the model....")
 
-    # Remove all people object (if exist) in the old model
-    model.getLightss.each do |os_light|
-      os_light.remove
+    runner.registerInfo("Removing old OS:Lights and OS:Lights:Definition for office and conference rooms.")
+    # Remove old lights definition objects for office and conference rooms
+    v_space_types.each do |space_type|
+      space_type.spaces.each do |space|
+        selected_space_type = lght_space_type_arg_vals[space.name.to_s]
+        if (@@office_type_names.include? selected_space_type) || (@@conference_room_type_names.include? selected_space_type)
+          space_type.lights.each do |lght|
+            puts 'Remove old lights definition object: ' + lght.lightsDefinition.name.to_s
+            lght.lightsDefinition.remove
+          end
+        end 
+      end
     end
 
-    model.getLightsDefinitions.each do |os_light_def|
-      os_light_def.remove
+    # Remove old lights objects for office and conference rooms
+    # Caution: the order of deletion matters
+    v_space_types.each do |space_type|
+      space_type.spaces.each do |space|
+        selected_space_type = lght_space_type_arg_vals[space.name.to_s]
+        if (@@office_type_names.include? selected_space_type) || (@@conference_room_type_names.include? selected_space_type)
+          space_type.lights.each do |lght|
+            puts 'Remove old lights object ' + lght.name.to_s
+            lght.remove
+          end
+        end 
+      end
     end
 
     v_spaces = model.getSpaces
@@ -316,7 +350,7 @@ class CreateLightingSchedule < OpenStudio::Measure::ModelMeasure
           temp_file_path = model_temp_run_path + file_name_light_sch
           sch_file_name = space.name.to_s + ' lght sch'
           scheduleFile = get_os_schedule_from_csv(model, temp_file_path, sch_file_name, col, skip_row=1)
-          scheduleFile.setMinutesperItem('10')
+          scheduleFile.setMinutesperItem(@@minute_per_item.to_s)
           puts scheduleFile
           model = add_light(model, space, scheduleFile)
         end
