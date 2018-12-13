@@ -75,22 +75,33 @@ class OccupancySimulator < OpenStudio::Measure::ModelMeasure
       'ClosedOffice',
       'OpenOffice',
       'SmallOffice - ClosedOffice',
-      'SmallOffice - OpenOffice'
+      'SmallOffice - OpenOffice',
+      'MediumOffice - ClosedOffice',
+      'MediumOffice - OpenOffice',
+      'LargeOffice - ClosedOffice',
+      'LargeOffice - OpenOffice'
     ]
     # Standard space types for meeting rooms
     v_conference_space_types = [
       'Conference',
       'SmallOffice - Conference',
+      'MediumOffice - Conference',
+      'MediumOffice - Classroom',
+      'LargeOffice - Conference'
     ]
     # Standard space types for auxiliary rooms
     v_auxiliary_space_types = [
       'OfficeLarge Data Center',
       'OfficeLarge Main Data Center',
       'SmallOffice - Elec/MechRoom',
+      'MediumOffice - Elec/MechRoom',
+      'LargeOffice - Elec/MechRoom'
+
     ]
     v_other_space_types = [
       'Office Attic', 
       'Attic', 
+      'Plenum', 
       'Plenum Space Type',
       'SmallOffice - Corridor',
       'SmallOffice - Lobby',
@@ -98,6 +109,18 @@ class OccupancySimulator < OpenStudio::Measure::ModelMeasure
       'SmallOffice - Restroom',
       'SmallOffice - Stair',
       'SmallOffice - Storage',
+      'MediumOffice - Corridor',
+      'MediumOffice - Dining',
+      'MediumOffice - Restroom',
+      'MediumOffice - Lobby',
+      'MediumOffice - Storage',
+      'MediumOffice - Stair',
+      'LargeOffice - Corridor',
+      'LargeOffice - Dining',
+      'LargeOffice - Restroom',
+      'LargeOffice - Lobby',
+      'LargeOffice - Storage',
+      'LargeOffice - Stair',
       ''
     ]
 
