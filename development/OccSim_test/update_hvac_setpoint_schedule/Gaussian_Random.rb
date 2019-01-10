@@ -22,7 +22,8 @@ end
 
 file_name = 'adfasdf.csv'
 
-gr = RandomGaussian.new(20, 3)
+gr = RandomGaussian.new(23.72, 1.19)
+gr = RandomGaussian.new(22.81, 1.87)
 
 
 for i in 1..1000 do
