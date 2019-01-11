@@ -1,5 +1,4 @@
-# require 'openstudio'
-require 'C:/openstudio-2.7.0/Ruby/openstudio.rb'
+require 'openstudio' # Note: The measure is available with OpenStuio >= 2.7.0
 require 'openstudio/ruleset/ShowRunnerOutput'
 require 'minitest/autorun'
 require_relative '../measure.rb'
