@@ -1,10 +1,25 @@
+# *** Copyright Notice ***
+
+# OS Measures Copyright (c) 2018, The Regents of the University of California, 
+# through Lawrence Berkeley National Laboratory (subject to receipt of any required 
+#   approvals from the U.S. Dept. of Energy). All rights reserved.
+
+# If you have questions about your rights to use or distribute this software, 
+# please contact Berkeley Lab's Innovation & Partnerships Office at  IPO@lbl.gov.
+
+# NOTICE.  This Software was developed under funding from the U.S. Department of 
+# Energy and the U.S. Government consequently retains certain rights. As such, 
+# the U.S. Government has been granted for itself and others acting on its behalf 
+# a paid-up, nonexclusive, irrevocable, worldwide license in the Software to 
+# reproduce, distribute copies to the public, prepare derivative works, and 
+# perform publicly and display publicly, and to permit other to do so. 
+
+# ****************************
+
 require 'openstudio'
 require 'time'
 require 'date'
 
-
-# see the URL below for information on how to write OpenStudio measures
-# http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
 # start the measure
 class OccupancySimulator < OpenStudio::Measure::ModelMeasure
@@ -382,7 +397,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
     # Loop through all space types
     v_space_types.each do |space_type|
-      # puts space_type.standardsSpaceType.to_s
       if v_office_space_types.include? space_type.standardsSpaceType.to_s
         # Add the corresponding office spaces to the array
         v_officeSpaces += space_type.spaces
@@ -967,15 +981,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     n_occ_hash = all_args[2]
     space_type_selected = occ_type_arg_vals[space_name]
 
-    # puts space_name
-
     # Only office and meeting spaces have space rules for now
     if not space_rules[space_type_selected].nil?
-
-      # For testing
-      puts '******'
-      puts space_name
-      puts n_occ_hash[space_name]
 
       # Create people activity schedule
       people_activity_sch = OpenStudio::Model::ScheduleCompact.new(model)
@@ -993,23 +1000,13 @@ def obXML_builder(osModel, userLib, outPath, all_args)
 
       # Check if the space is office or meeting room.
       if space_rules[space_type_selected]['OccupancyDensity'].nil?
-        # The current space is a meeting room
-        # n_people = space_rules[space_type_selected]['MaximumNumberOfPeoplePerMeeting']
-
         n_people = n_occ_hash[space_name]
         new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
         new_people_def.setNumberofPeople(n_people)
       else
-        # The current space is a office room
-        # people_per_area = 1.0/space_rules[space_type_selected]['OccupancyDensity'] # reciprocal of area/person in the user defined library
-        # new_people_def.setNumberOfPeopleCalculationMethod('People/Area', 1)
-
         n_people = n_occ_hash[space_name]
         new_people_def.setNumberOfPeopleCalculationMethod('People', 1)
         new_people_def.setNumberofPeople(n_people)
-        # new_people_def.setPeopleperSpaceFloorArea(people_per_area)
-
-        # puts people_per_area
       end
       # Map the schedule to space
       # Get the column number in the output schedule file by space name
@@ -1018,9 +1015,7 @@ def obXML_builder(osModel, userLib, outPath, all_args)
       people_sch = get_os_schedule_from_csv(csv_file, model, sch_file_name, col_number, skip_row = 7)
       # Set minute per item (timestep = 10min) May need to change !!!
       people_sch.setMinutesperItem('10')
-
       new_people.setNumberofPeopleSchedule(people_sch)
-
       # Add schedule to the right space
       model.getSpaces.each do |current_space|
         if current_space.nameString == space_name
@@ -1137,8 +1132,6 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     model.getPeopleDefinitions.each do |os_people_def|
       os_people_def.remove
     end
-
-    puts all_args[2]
 
     # Add schedule:file to model
     model.getSpaces.each do |space|

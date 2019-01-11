@@ -9,33 +9,28 @@ require 'openstudio-standards.rb'
 
 class OccupancySimulatorTest < Minitest::Test
 
-  # def create_model(building_type, vintage, climate_zone, osm_directory)
-  #     model = OpenStudio::Model::Model.new
-  #     @debug = false
-  #     epw_file = 'Not Applicable'
-  #     prototype_creator = Standard.build("#{vintage}_#{building_type}")
-  #     prototype_creator.model_create_prototype_model(climate_zone, epw_file, osm_directory, @debug, model)
-  # end
+  def create_model(building_type, vintage, climate_zone, osm_directory)
+      model = OpenStudio::Model::Model.new
+      @debug = false
+      epw_file = 'Not Applicable'
+      prototype_creator = Standard.build("#{vintage}_#{building_type}")
+      prototype_creator.model_create_prototype_model(climate_zone, epw_file, osm_directory, @debug, model)
+  end
 
-  # def setup
-  #   # Create a small office reference model for the testing
-  #   path = File.dirname(__FILE__)
-  #   building_type = 'SmallOffice'
-  #   vintage = '90.1-2004'
-  #   climate_zone = 'ASHRAE 169-2006-1A'
-  #   osm_directory = path
-  #   create_model(building_type, vintage, climate_zone, osm_directory)
+  def setup
+    # Create a small office reference model for the testing
+    path = File.dirname(__FILE__)
+    building_type = 'SmallOffice'
+    vintage = '90.1-2004'
+    climate_zone = 'ASHRAE 169-2006-1A'
+    osm_directory = path
+    create_model(building_type, vintage, climate_zone, osm_directory)
 
-  #   # Move the mocdel to the test main folder
-  #   FileUtils.mv(path + '/SR1/in.osm', path + '/test_model.osm')
-  #   FileUtils.mv(path + '/SR1/in.idf', path + '/test_model.idf')
-  #   FileUtils.mv(path + '/SR1/in.epw', path + '/test_model.epw')
-  #   FileUtils.rm_rf(path + '/SR1')
-  # end
-
-  # def teardown
-  # end
-
+    # Move the mocdel to the test main folder
+    FileUtils.mv(path + '/SR1/in.osm', path + '/test_model.osm')
+    FileUtils.mv(path + '/SR1/in.idf', path + '/test_model.idf')
+    FileUtils.mv(path + '/SR1/in.epw', path + '/test_model.epw')
+  end
 
   def test_argument_size_and_default_values
     # load the test model generated in the setup
@@ -92,8 +87,14 @@ class OccupancySimulatorTest < Minitest::Test
     argument_map = OpenStudio::Measure::convertOSArgumentVectorToMap(arguments)
     assert(measure.run(model, runner, argument_map))
 
-    result = runner.result
-    show_output(result)
+    v_schedule_files = model.getScheduleFiles
+    assert_equal(5, v_schedule_files.length)
   end
 
+
+  def teardown
+    FileUtils.rm_f('./OccSimulator_out_IDF.csv')
+    FileUtils.rm_rf('./SR1')
+    FileUtils.rm_f('./SR1')
+  end
 end
