@@ -1108,7 +1108,8 @@ def obXML_builder(osModel, userLib, outPath, all_args)
     runner.registerInfo("The old output occ sch file is at '#{external_csv_path}'")
 
     # Important, copy the output csv from the obFMU path
-    # FileUtils.cp(output_file_name + '_IDF.csv', model_temp_resources_path) # No longer need this with OS V2.7.1 or later
+    # FileUtils.cp(output_file_name + '_IDF.csv', model_temp_resources_path) # No longer need this with OS V2.7.1 or later if the file is used in OpenStudio object
+    FileUtils.cp(output_file_name + '.csv', model_temp_resources_path + '/files/')
 
     runner.registerInfo("Occupancy schedule files copied to the temporary folder: #{model_temp_run_path}.")
 
