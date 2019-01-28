@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>occ_sim_integration</name>
   <uid>84e201ac-8352-46e5-9dc7-bee0d0b43221</uid>
-  <version_id>50c2ef6c-d560-48f1-9bab-67a3098a9a4a</version_id>
-  <version_modified>20181108T213845Z</version_modified>
+  <version_id>6e71d38e-dd53-470d-ab56-9a5230d3f612</version_id>
+  <version_modified>20190124T190156Z</version_modified>
   <xml_checksum>890F5164</xml_checksum>
   <class_name>OccSim_integration</class_name>
   <display_name>OccSim_integration</display_name>
@@ -77,31 +77,31 @@
       <filename>obXML.xml</filename>
       <filetype>xml</filetype>
       <usage_type>resource</usage_type>
-      <checksum>0B94B0B7</checksum>
+      <checksum>15082FFD</checksum>
     </file>
     <file>
       <filename>OccSimulator_out.csv</filename>
       <filetype>csv</filetype>
       <usage_type>resource</usage_type>
-      <checksum>52B73365</checksum>
+      <checksum>658EE1CF</checksum>
     </file>
     <file>
       <filename>OccSimulator_out_by_Occupant.csv</filename>
       <filetype>csv</filetype>
       <usage_type>resource</usage_type>
-      <checksum>D39538B9</checksum>
+      <checksum>EA28D2B4</checksum>
     </file>
     <file>
       <filename>OccSimulator_out_IDF.csv</filename>
       <filetype>csv</filetype>
       <usage_type>resource</usage_type>
-      <checksum>AA6B5FC1</checksum>
+      <checksum>550C9B82</checksum>
     </file>
     <file>
       <filename>OccSimulator_out_IDF.idf</filename>
       <filetype>idf</filetype>
       <usage_type>resource</usage_type>
-      <checksum>532D9B79</checksum>
+      <checksum>CBD34311</checksum>
     </file>
   </files>
 </measure>
